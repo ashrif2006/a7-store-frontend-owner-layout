@@ -1,1 +1,15 @@
-<p>dashboard-layout works!</p>
+<!-- Dashboard layout: sidebar + topbar + router-outlet -->
+<div class="dash-layout" style="background:var(--paper-dim);">
+
+  <!-- Sidebar (desktop sticky, mobile via offcanvas) -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main content area -->
+  <div class="dash-content">
+    <app-topbar></app-topbar>
+    <main class="dash-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+</div>

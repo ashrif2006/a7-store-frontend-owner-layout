@@ -1,1 +1,45 @@
-<p>topbar works!</p>
+<header class="dash-topbar gap-3">
+
+  <!-- Left: mobile toggle + page title -->
+  <div class="d-flex align-items-center gap-3">
+    <button
+      class="sidebar-toggle-btn mobile-only border-0"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#mobileSidebar"
+      aria-label="فتح القائمة">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <span class="fw-bold" style="font-size:1rem;">{{ pageTitle() }}</span>
+  </div>
+
+  <!-- Right: bell + avatar -->
+  <div class="d-flex align-items-center gap-2">
+
+    <!-- Notifications bell -->
+    <button class="sidebar-toggle-btn border-0 position-relative" aria-label="الإشعارات">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      @if (pendingCount() > 0) {
+        <span
+          class="position-absolute top-0 start-0 badge rounded-pill bg-danger"
+          style="font-size:.6rem; padding:2px 4px; transform:translate(-20%,-20%);">
+          {{ pendingCount() }}
+        </span>
+      }
+    </button>
+
+    <!-- Avatar -->
+    <div
+      class="d-flex align-items-center justify-content-center rounded-circle fw-bold text-white"
+      style="width:38px; height:38px; background:var(--accent); font-family:var(--font-display); cursor:pointer;">
+      {{ storeInitial() }}
+    </div>
+
+  </div>
+</header>

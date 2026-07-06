@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [],
   templateUrl: './topbar.component.html',
-  styleUrl: './topbar.component.css'
 })
 export class TopbarComponent {
-
+  pageTitle    = signal('لوحة التحكم'); 
+  storeInitial = signal('س');
+  pendingCount = signal(3);
 }

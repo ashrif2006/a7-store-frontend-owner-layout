@@ -1,1 +1,79 @@
-<p>sidebar works!</p>
+<!-- SIDEBAR — desktop sticky + mobile offcanvas -->
+<aside class="dash-sidebar d-none d-lg-flex flex-column position-sticky top-0" style="height:100vh; overflow-y:auto;">
+  <ng-container *ngTemplateOutlet="sidebarContent"></ng-container>
+</aside>
+
+<!-- Mobile offcanvas -->
+<div class="offcanvas offcanvas-end dash-sidebar" tabindex="-1" id="mobileSidebar" style="width:264px;">
+  <div class="offcanvas-header border-0 p-0">
+    <div class="brand w-100">
+      <span class="dot"></span> دكّان
+      <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"></button>
+    </div>
+  </div>
+  <ng-container *ngTemplateOutlet="sidebarContent"></ng-container>
+</div>
+
+<!-- Shared sidebar template -->
+<ng-template #sidebarContent>
+  <div class="brand d-none d-lg-flex">
+    <span class="dot"></span> دكّان
+  </div>
+
+  <nav class="dash-nav flex-grow-1">
+    <span class="nav-section-label">الرئيسية</span>
+    <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+      </svg>
+      لوحة التحكم
+    </a>
+
+    <span class="nav-section-label mt-2">المتجر</span>
+    <a routerLink="/dashboard/products" routerLinkActive="active" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      </svg>
+      المنتجات
+    </a>
+
+    <a routerLink="/dashboard/orders" routerLinkActive="active" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="2"/>
+        <path d="M9 12h6M9 16h4"/>
+      </svg>
+      الطلبات
+      @if (pendingCount() > 0) {
+        <span class="badge-count">{{ pendingCount() }}</span>
+      }
+    </a>
+
+    <a routerLink="/dashboard/settings" routerLinkActive="active" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33
+                 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33
+                 l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4
+                 h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06
+                 A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51
+                 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9
+                 a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      إعدادات المتجر
+    </a>
+  </nav>
+
+  <!-- Store chip -->
+  <div class="sidebar-footer">
+    <div class="store-chip">
+      <div class="avatar">{{ storeInitial() }}</div>
+      <div>
+        <div class="fw-semibold text-white" style="font-size:0.9rem;">{{ storeName() }}</div>
+        <small>{{ storeSlug() }}</small>
+      </div>
+    </div>
+  </div>
+</ng-template>

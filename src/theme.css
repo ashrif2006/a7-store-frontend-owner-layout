@@ -67,7 +67,8 @@ a { text-decoration: none; }
   gap: 0.5rem;
 }
 .navbar-brand-mark .dot {
-  width: 9px; height: 9px;
+  width: 9px;
+  height: 9px;
   background: var(--accent);
   border-radius: 50%;
   display: inline-block;
