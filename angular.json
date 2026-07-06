@@ -27,7 +27,9 @@
               }
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.rtl.min.css"
+              "node_modules/bootstrap/dist/css/bootstrap.rtl.min.css",
+              "src/theme.css",
+              "src/styles.css"
             ],
             "scripts": ["node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"]
           },

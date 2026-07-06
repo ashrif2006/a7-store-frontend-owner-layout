@@ -1,1 +1,165 @@
-<p>landing works!</p>
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar navbar-expand-lg site-navbar sticky-top py-3">
+  <div class="container">
+    <a class="navbar-brand-mark" routerLink="/">
+      <span class="dot"></span> A7-store
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav mx-auto gap-1 mt-3 mt-lg-0">
+        <li class="nav-item"><a class="nav-link" href="#features">المميزات</a></li>
+        <li class="nav-item"><a class="nav-link" href="#how">طريقة الشغل</a></li>
+      </ul>
+      <div class="d-flex gap-2 mt-3 mt-lg-0">
+        <a routerLink="/login" class="btn btn-ghost btn-sm">تسجيل الدخول</a>
+        <a routerLink="/register" class="btn btn-accent btn-sm">افتح متجرك مجانًا</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero-wrap">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+
+      <div class="col-lg-6">
+        <span class="eyebrow" style="color: var(--accent)">منصة المتاجر الصغيرة</span>
+        <h1 class="hero-title mt-3 mb-4">
+          متجرك يفتح دلوقتي،<br>
+          والطلب يوصلك <span class="accent-word">واتساب</span>
+        </h1>
+        <p class="mb-4" style="color:#c9cdd6; font-size:1.15rem; max-width:480px;">
+          صفحة متجر خاصة بيك، تضيف منتجاتك في دقايق، والعميل يطلب ويوصلك إشعار فوري — تقبل الطلب أو ترفضه من لوحة تحكم واحدة.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a routerLink="/auth/register" class="btn btn-accent btn-lg">ابدأ مجانًا الآن</a>
+          <a href="#how" class="btn btn-lg" style="border: 1.5px solid #c9cdd6; color:#fff; background:transparent;">
+            إزاي بتشتغل؟
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="d-flex gap-4 mt-5 flex-wrap">
+          <div>
+            <div class="num text-white fw-bold" style="font-size:1.6rem;">+1,200</div>
+            <div style="color:#9aa3b2; font-size:0.85rem;">متجر فاتح حسابه</div>
+          </div>
+          <div>
+            <div class="num text-white fw-bold" style="font-size:1.6rem;">دقيقتين</div>
+            <div style="color:#9aa3b2; font-size:0.85rem;">متوسط وقت فتح المتجر</div>
+          </div>
+          <div>
+            <div class="num text-white fw-bold" style="font-size:1.6rem;">0%</div>
+            <div style="color:#9aa3b2; font-size:0.85rem;">عمولة على أوردراتك</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Receipt mock -->
+      <div class="col-lg-6 d-flex justify-content-center">
+        <div class="receipt" style="transform:rotate(-3deg); width:100%; max-width:360px; padding:1.6rem 1.6rem 1.8rem; color:var(--ink);">
+          <div style="font-family:var(--font-display); font-weight:700; font-size:1.15rem; text-align:center;">متجر سارة للإكسسوارات</div>
+          <div style="text-align:center; font-size:0.72rem; color:var(--slate-light); letter-spacing:0.06em; text-transform:uppercase; margin-top:0.2rem;">طلب جديد · #00482</div>
+          <hr class="perf-divider">
+          <div class="d-flex justify-content-between" style="font-size:0.86rem; padding:0.3rem 0;">
+            <span>طقم خواتم فضة (×2)</span><span class="num">450 ج.م</span>
+          </div>
+          <div class="d-flex justify-content-between" style="font-size:0.86rem; padding:0.3rem 0;">
+            <span>شغل توصيل</span><span class="num">35 ج.م</span>
+          </div>
+          <hr class="perf-divider">
+          <div class="d-flex justify-content-between fw-bold" style="font-size:1rem;">
+            <span>الإجمالي</span><span class="num">485 ج.م</span>
+          </div>
+          <div class="text-center mt-2">
+            <span class="badge-status badge-pending">في انتظار التأكيد</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FEATURES ===================== -->
+<section id="features" class="py-5 my-3">
+  <div class="container">
+    <div class="text-center mx-auto mb-5" style="max-width:560px;">
+      <span class="eyebrow">ليه A7-store</span>
+      <h2 class="mt-2 mb-3">كل ما يحتاجه متجرك الصغير، في صفحة واحدة</h2>
+      <p style="color:var(--slate);">من غير برمجة، من غير تعقيد — تركيبة بسيطة تناسب البيع اليومي على واتساب.</p>
+    </div>
+
+    <div class="row g-4">
+      @for (feature of features; track feature.title) {
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm h-100 p-4" style="border-radius:var(--r-md);">
+            <div class="feature-icon">
+              <i [class] = "feature.iconPath"></i>
+            </div>
+            <h4 class="h5 mb-2">{{ feature.title }}</h4>
+            <p class="mb-0" style="color:var(--slate);">{{ feature.desc }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section id="how" class="py-5 my-3" style="background:var(--paper-dim);">
+  <div class="container">
+    <div class="row gy-5 align-items-center">
+      <div class="col-lg-5">
+        <span class="eyebrow">طريقة الشغل</span>
+        <h2 class="mt-2 mb-4">من التسجيل لأول طلب، ثلاث خطوات بس</h2>
+        <a routerLink="/auth/register" class="btn btn-ink">جرّب دلوقتي</a>
+      </div>
+      <div class="col-lg-7">
+        <div class="d-flex flex-column gap-4">
+          @for (step of steps; track step.num) {
+            <div class="d-flex gap-3 align-items-start">
+              <span class="step-mark flex-shrink-0">{{ step.num }}</span>
+              <div>
+                <h4 class="h6 mb-1">{{ step.title }}</h4>
+                <p style="color:var(--slate);" class="mb-0">{{ step.desc }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA ===================== -->
+<section class="py-5 my-3">
+  <div class="container">
+    <div class="cta-band p-5 text-center">
+      <h2 class="text-white mb-3">جاهز تفتح متجرك؟</h2>
+      <p class="mb-4" style="color:rgba(255,255,255,.85); max-width:480px; margin-inline:auto;">
+        مجاني تمامًا تبدأ بيه، وبدون عمولة على طلباتك.
+      </p>
+      <a routerLink="/auth/register" class="btn btn-lg fw-bold" style="background:#fff; color:var(--accent-dark);">
+        افتح متجرك الآن
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="py-5" style="background:var(--ink); color:var(--slate-light);">
+  <div class="container d-flex flex-wrap justify-content-between gap-3">
+    <a routerLink="/" class="navbar-brand-mark" style="color:#fff !important;">
+      <span class="dot"></span> A7-store
+    </a>
+    <div class="d-flex gap-4">
+      <a href="#features" style="color:#c9cdd6;">المميزات</a>
+      <a href="#how" style="color:#c9cdd6;">طريقة الشغل</a>
+      <a routerLink="/auth/login" style="color:#c9cdd6;">تسجيل الدخول</a>
+    </div>
+  </div>
+</footer>
