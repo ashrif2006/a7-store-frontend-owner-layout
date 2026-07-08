@@ -1,1 +1,302 @@
-<p>register works!</p>
+<div class="auth-shell row g-0 min-vh-100">
+  <!-- ===== FORM SIDE ===== -->
+  <div class="col-lg-6 d-flex align-items-center justify-content-center p-4 p-md-5 auth-form-side">
+    <div class="auth-form-card" style="max-width: 460px; width: 100%;">
+      <a routerLink="/" class="navbar-brand-mark mb-4 d-inline-flex">
+        <span class="dot"></span> A7-Store
+      </a>
+
+      <span class="eyebrow d-block mb-1">ابدأ رحلتك</span>
+      <h1 class="h2 fw-bold mt-2 mb-2">افتح متجرك</h1>
+      <p class="text-secondary mb-4" style="font-size: 0.95rem;">سجّل حسابك وابدأ تبيع أونلاين في دقائق.</p>
+
+      <!-- Step Indicator -->
+      <div class="d-flex align-items-center gap-2 mb-4">
+        <div class="step-pill" [class.active]="currentStep === 1" (click)="currentStep = 1">
+          <span class="step-number">1</span>
+          <span class="d-none d-sm-inline">بيانات المتجر</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep === 2"></div>
+        <div class="step-pill" [class.active]="currentStep === 2">
+          <span class="step-number">2</span>
+          <span class="d-none d-sm-inline">بيانات الحساب</span>
+        </div>
+      </div>
+
+      <form (ngSubmit)="onRegister()" #registerForm="ngForm" novalidate>
+
+        <!-- ====== STEP 1: Store Info ====== -->
+        @if (currentStep === 1) {
+          <div class="mb-3">
+            <label for="storeName" class="form-label fw-semibold small">اسم المتجر</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-store" style="color: var(--accent);"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control form-control-lg" 
+                id="storeName" 
+                name="storeName"
+                [(ngModel)]="registerData.storeName"
+                #storeNameInput="ngModel"
+                placeholder="مثلاً: متجر النور" 
+                required
+                minlength="3">
+            </div>
+            @if (storeNameInput.invalid && (storeNameInput.dirty || storeNameInput.touched)) {
+              <div class="text-danger small mt-1">
+                اسم المتجر لازم يكون 3 حروف على الأقل.
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label for="ownerName" class="form-label fw-semibold small">اسم صاحب المتجر</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-user" style="color: var(--accent);"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control form-control-lg" 
+                id="ownerName" 
+                name="ownerName"
+                [(ngModel)]="registerData.ownerName"
+                #ownerNameInput="ngModel"
+                placeholder="الاسم الكامل" 
+                required
+                minlength="3">
+            </div>
+            @if (ownerNameInput.invalid && (ownerNameInput.dirty || ownerNameInput.touched)) {
+              <div class="text-danger small mt-1">
+                من فضلك أدخل اسمك الكامل.
+              </div>
+            }
+          </div>
+
+          <div class="mb-4">
+            <label for="phone" class="form-label fw-semibold small">رقم الموبايل</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-phone" style="color: var(--accent);"></i>
+              </span>
+              <input 
+                type="tel" 
+                class="form-control form-control-lg" 
+                id="phone" 
+                name="phone"
+                [(ngModel)]="registerData.phone"
+                #phoneInput="ngModel"
+                placeholder="01xxxxxxxxx" 
+                required
+                pattern="^01[0-9]{9}$">
+            </div>
+            @if (phoneInput.invalid && (phoneInput.dirty || phoneInput.touched)) {
+              <div class="text-danger small mt-1">
+                أدخل رقم موبايل صحيح (11 رقم يبدأ بـ 01).
+              </div>
+            }
+          </div>
+
+          <button type="button" class="btn btn-accent w-100 btn-lg mb-3"
+                  [disabled]="storeNameInput.invalid || ownerNameInput.invalid || phoneInput.invalid"
+                  (click)="nextStep()">
+            التالي
+            <i class="fas fa-arrow-left ms-2"></i>
+          </button>
+        }
+
+        <!-- ====== STEP 2: Account Info ====== -->
+        @if (currentStep === 2) {
+          <div class="mb-3">
+            <label for="regEmail" class="form-label fw-semibold small">البريد الإلكتروني</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="fas fa-envelope" style="color: var(--accent);"></i>
+              </span>
+              <input 
+                type="email" 
+                class="form-control form-control-lg" 
+                id="regEmail" 
+                name="email"
+                [(ngModel)]="registerData.email"
+                #emailInput="ngModel"
+                placeholder="name@store.com" 
+                required
+                email>
+            </div>
+            @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+              <div class="text-danger small mt-1">
+                من فضلك أدخل بريد إلكتروني صحيح.
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="regPassword">كلمة المرور</label>
+            <div class="input-group">
+              <input 
+                [type]="showPassword ? 'text' : 'password'" 
+                class="form-control form-control-lg" 
+                id="regPassword" 
+                name="password"
+                [(ngModel)]="registerData.password"
+                #passwordInput="ngModel"
+                placeholder="••••••••" 
+                required 
+                minlength="6">
+              <button class="btn btn-outline-secondary border" type="button" (click)="togglePasswordVisibility()">
+                @if (!showPassword) {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+              <div class="text-danger small mt-1">
+                كلمة المرور لازم تكون 6 حروف على الأقل.
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" for="confirmPassword">تأكيد كلمة المرور</label>
+            <div class="input-group">
+              <input 
+                [type]="showConfirmPassword ? 'text' : 'password'" 
+                class="form-control form-control-lg" 
+                id="confirmPassword" 
+                name="confirmPassword"
+                [(ngModel)]="registerData.confirmPassword"
+                #confirmPasswordInput="ngModel"
+                placeholder="••••••••" 
+                required 
+                minlength="6">
+              <button class="btn btn-outline-secondary border" type="button" (click)="toggleConfirmPasswordVisibility()">
+                @if (!showConfirmPassword) {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                }
+              </button>
+            </div>
+            @if (confirmPasswordInput.touched && !passwordsMatch) {
+              <div class="text-danger small mt-1">
+                كلمتين المرور مش متطابقين.
+              </div>
+            }
+          </div>
+
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="agreeTerms" name="agreeTerms" [(ngModel)]="registerData.agreeTerms">
+            <label class="form-check-label text-secondary small" for="agreeTerms">
+              أوافق على <a href="#" class="text-accent fw-semibold">الشروط والأحكام</a> و<a href="#" class="text-accent fw-semibold">سياسة الخصوصية</a>
+            </label>
+          </div>
+
+          <div class="d-flex gap-2 mb-3">
+            <button type="button" class="btn btn-outline-secondary btn-lg px-4" (click)="prevStep()">
+              <i class="fas fa-arrow-right me-1"></i>
+              رجوع
+            </button>
+            <button type="submit" 
+                    [disabled]="registerForm.invalid || !passwordsMatch || !registerData.agreeTerms" 
+                    class="btn btn-accent btn-lg flex-fill">
+              <i class="fas fa-rocket me-2"></i>
+              افتح متجرك
+            </button>
+          </div>
+        }
+
+        <p class="text-center text-secondary mb-0 small mt-2">
+          عندك حساب بالفعل؟ <a routerLink="/login" class="text-accent fw-semibold">سجّل دخولك</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== VISUAL SIDE ===== -->
+  <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center auth-visual position-relative overflow-hidden">
+    <div class="visual-dots"></div>
+
+    <div class="auth-visual-inner position-relative" style="z-index: 2; max-width: 480px;">
+      <p class="auth-quote">"فتحت متجري في أقل من 10 دقائق، وبدأت أبيع من أول يوم!"</p>
+      <p class="mt-3" style="font-size: 0.9rem; color: #9aa3b2;">— أحمد، متجر ملابس</p>
+
+      <!-- Features mini-cards -->
+      <div class="row g-3 mt-3">
+        <div class="col-6">
+          <div class="feature-mini-card rounded-3 p-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="feature-icon-sm rounded-2 d-flex align-items-center justify-content-center">
+                <i class="fas fa-bolt text-white" style="font-size: 0.85rem;"></i>
+              </div>
+              <span class="fw-bold text-white small">إعداد سريع</span>
+            </div>
+            <p class="mb-0" style="font-size: 0.78rem; color: var(--slate-light);">متجرك جاهز في دقائق</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="feature-mini-card rounded-3 p-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="feature-icon-sm rounded-2 d-flex align-items-center justify-content-center">
+                <i class="fas fa-chart-line text-white" style="font-size: 0.85rem;"></i>
+              </div>
+              <span class="fw-bold text-white small">تحليلات ذكية</span>
+            </div>
+            <p class="mb-0" style="font-size: 0.78rem; color: var(--slate-light);">تابع مبيعاتك لحظة بلحظة</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="feature-mini-card rounded-3 p-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="feature-icon-sm rounded-2 d-flex align-items-center justify-content-center">
+                <i class="fas fa-truck text-white" style="font-size: 0.85rem;"></i>
+              </div>
+              <span class="fw-bold text-white small">إدارة الشحن</span>
+            </div>
+            <p class="mb-0" style="font-size: 0.78rem; color: var(--slate-light);">تتبع الطلبات بسهولة</p>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="feature-mini-card rounded-3 p-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="feature-icon-sm rounded-2 d-flex align-items-center justify-content-center">
+                <i class="fas fa-shield-halved text-white" style="font-size: 0.85rem;"></i>
+              </div>
+              <span class="fw-bold text-white small">حماية كاملة</span>
+            </div>
+            <p class="mb-0" style="font-size: 0.78rem; color: var(--slate-light);">بياناتك في أمان تام</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust indicators -->
+      <div class="d-flex align-items-center gap-3 mt-4 pt-2">
+        <div class="d-flex align-items-center gap-2">
+          <div class="trust-avatars d-flex">
+            <div class="trust-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold" style="background: var(--accent); color: #fff;">س</div>
+            <div class="trust-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold" style="background: #3a7ee8; color: #fff;">م</div>
+            <div class="trust-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold" style="background: #e8703a; color: #fff;">أ</div>
+          </div>
+          <div>
+            <span class="d-block text-white fw-bold small">+2,500 متجر</span>
+            <span class="d-block" style="font-size: 0.72rem; color: var(--slate-light);">يثقون فينا</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,179 @@
+/* ==========================================================================
+   AUTH REGISTER — Only custom styles that Bootstrap can't handle
+   ========================================================================== */
+:host { display: block; }
+
+/* ── Form Side subtle background texture ── */
+.auth-form-side {
+  background: var(--paper);
+  position: relative;
+}
+.auth-form-side::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 80% 80%, rgba(31,157,107,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 20% 20%, rgba(58,126,232,0.03) 0%, transparent 40%);
+  pointer-events: none;
+}
+.auth-form-card { position: relative; z-index: 2; }
+
+/* ── Step Indicator ── */
+.step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--paper-dim);
+  color: var(--slate);
+  border: 1.5px solid var(--line);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.step-pill.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px -4px rgba(31,157,107,0.35);
+}
+.step-number {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(0,0,0,0.08);
+}
+.step-pill.active .step-number {
+  background: rgba(255,255,255,0.25);
+}
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--line);
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+.step-line.active {
+  background: var(--accent);
+}
+
+/* ── Form focus accent color ── */
+.auth-form-card .form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.2rem rgba(31,157,107,0.15);
+}
+.auth-form-card .input-group-text {
+  border-color: var(--line);
+  transition: border-color 0.25s ease;
+}
+.auth-form-card .input-group:focus-within .input-group-text {
+  border-color: var(--accent);
+}
+.auth-form-card .form-check-input:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+.text-accent       { color: var(--accent) !important; }
+.text-accent:hover  { color: var(--accent-dark) !important; }
+
+/* ── Submit button glow ── */
+.auth-form-card .btn-accent:hover {
+  box-shadow: 0 8px 24px -6px rgba(31,157,107,0.45);
+  transform: translateY(-1px);
+}
+.auth-form-card .btn-accent:active { transform: translateY(0); }
+.auth-form-card .btn-accent:disabled { opacity: 0.55; transform: none; box-shadow: none; }
+
+/* ── Visual Side ── */
+.auth-visual { background: var(--ink); }
+
+.auth-visual::before,
+.auth-visual::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: glowPulse 6s ease-in-out infinite alternate;
+}
+.auth-visual::before {
+  top: -150px; left: -120px;
+  width: 550px; height: 550px;
+  background: radial-gradient(circle, rgba(31,157,107,0.22), transparent 65%);
+}
+.auth-visual::after {
+  bottom: -100px; right: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(58,126,232,0.10), transparent 60%);
+  animation-delay: 2s; animation-duration: 8s;
+}
+
+@keyframes glowPulse {
+  0%   { transform: scale(1);    opacity: 0.7; }
+  100% { transform: scale(1.15); opacity: 1;   }
+}
+
+.visual-dots {
+  position: absolute; bottom: 40px; right: 40px;
+  width: 120px; height: 120px;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.6;
+}
+
+/* Quote accent bar */
+.auth-quote {
+  font-family: var(--font-display);
+  font-size: 1.5rem; line-height: 1.55;
+  color: #fff;
+  position: relative;
+  padding-right: 1.5rem;
+}
+.auth-quote::before {
+  content: ''; position: absolute;
+  right: 0; top: 0.25rem; bottom: 0.25rem;
+  width: 3px; background: var(--accent); border-radius: 2px;
+}
+
+/* ── Feature Mini Cards ── */
+.feature-mini-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.3s ease;
+}
+.feature-mini-card:hover {
+  background: rgba(255,255,255,0.10);
+  transform: translateY(-2px);
+}
+
+.feature-icon-sm {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── Trust Avatars ── */
+.trust-avatars {
+  display: flex;
+}
+.trust-avatar {
+  width: 32px; height: 32px;
+  font-size: 0.75rem;
+  border: 2px solid var(--ink);
+  margin-inline-start: -8px;
+}
+.trust-avatar:first-child { margin-inline-start: 0; }
+
+/* ── Entrance Animation ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.auth-form-card      { animation: fadeSlideUp 0.6s cubic-bezier(.25,.8,.25,1) forwards; }
+.auth-visual-inner   { animation: fadeSlideUp 0.7s cubic-bezier(.25,.8,.25,1) 0.15s both; }
