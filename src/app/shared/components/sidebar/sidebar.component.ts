@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
+import { StoreService } from '../../../services/store.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,7 +10,11 @@ import { NgTemplateOutlet } from '@angular/common';
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
-  // ── Dummy data — wire to StoreService later ──
+
+  storeService = inject(StoreService); 
+  constructor(){
+    console.log(this.storeService.store())
+  }
   storeName    = signal('متجر سارة');
   storeSlug    = signal('sara-store');
   storeInitial = signal('س');

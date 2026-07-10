@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { TokenService } from '../../services/token.service';
 import { registerRequest } from '../../models/auth.interface';
 import { SpinnerComponent } from '../../shared/components/spinner/spinner.component';
+import { StoreService } from '../../services/store.service';
 
 @Component({
   selector: 'app-register',
@@ -21,6 +22,7 @@ export class RegisterComponent {
     private http: HttpClient,
     private authService: AuthService,
     private tokenService: TokenService,
+    private StoreService: StoreService,
     private router: Router,
   ) {}
 
@@ -69,12 +71,20 @@ export class RegisterComponent {
       slug:this.registerForm.value.storeName!,
 
     } 
+
+    const storeInformation = {
+      name: this.registerForm.value.ownerName!,
+      slug: this.registerForm.value.storeName!,
+      whatsapp_number: this.registerForm.value.phone!,
+    }
     this.loading = true
     this.authService.register(dataRequest).subscribe({
       
       next:(res)=>{
         console.log(res);
         this.tokenService.save(res.token);
+        console.log('store' , res.store);
+        // this.StoreService.setStore(res.store);
         this.router.navigate(['/store-settings']);
         this.loading = false
       },
