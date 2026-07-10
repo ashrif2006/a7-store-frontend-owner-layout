@@ -63,7 +63,14 @@
 
 
 
-        <button type="submit"   class="btn btn-accent w-100 btn-lg mb-3" >دخول</button>
+        <button type="submit"   class="btn btn-accent w-100 btn-lg mb-3" [disabled] = "loginForm.invalid" >
+          @if(loading()){
+            <app-spinner></app-spinner>
+          }
+          @else{
+            تسجيل الدخول
+          }
+        </button>
 
         <p class="text-center text-secondary mb-0 small">
           لسه معندكش متجر؟ <a routerLink="/register" class="text-accent fw-semibold">افتح متجرك الآن</a>

@@ -1,0 +1,35 @@
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 50px; 
+}
+
+/* السبنر الاحترافي */
+.loader {
+  --size: 24px;              
+  --border-width: 3px;      
+  --track-color: rgba(255, 255, 255, 0.15); 
+  --spinner-color: #ffffff;  
+  --speed: 0.6s;            
+
+  width: var(--size);
+  height: var(--size);
+  border: var(--border-width) solid var(--track-color);
+  border-top-color: var(--spinner-color);
+  border-radius: 50%;
+  
+  animation: spin var(--speed) cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; 
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

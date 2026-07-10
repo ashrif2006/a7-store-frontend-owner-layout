@@ -4,6 +4,7 @@ import { authGuard, guestGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     loadComponent: () =>
       import('./landing/landing.component').then((c) => c.LandingComponent),
   },

@@ -1,28 +1,42 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import {Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
+import { TokenService } from '../../services/token.service';
+import { registerRequest } from '../../models/auth.interface';
+import { SpinnerComponent } from '../../shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule , SpinnerComponent],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
+  registerFormBuilder: any;
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private tokenService: TokenService,
+    private router: Router,
+  ) {}
 
-  registerData = {
-    storeName: '',
-    ownerName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    agreeTerms: false
-  };
+  private fb = inject(FormBuilder);
 
+  registerForm = this.fb.group({
+    storeName: [''],
+    ownerName: [''],
+    email: [''],
+    phone: [''],
+    password: [''],
+    confirmPassword: [''],
+    agreeTerms: [false]
+  });
   showPassword = false;
+  loading = false;
   showConfirmPassword = false;
   currentStep = 1;
 
@@ -35,7 +49,7 @@ export class RegisterComponent {
   }
 
   get passwordsMatch(): boolean {
-    return this.registerData.password === this.registerData.confirmPassword;
+    return this.registerForm.get('password')?.value === this.registerForm.get('confirmPassword')?.value;
   }
 
   nextStep() {
@@ -48,5 +62,27 @@ export class RegisterComponent {
 
   onRegister() {
     // Logic will be handled separately
+    const dataRequest:registerRequest ={
+      name:this.registerForm.value.ownerName!,
+      email:this.registerForm.value.email!,
+      password:this.registerForm.value.password!,
+      slug:this.registerForm.value.storeName!,
+
+    } 
+    this.loading = true
+    this.authService.register(dataRequest).subscribe({
+      
+      next:(res)=>{
+        console.log(res);
+        this.tokenService.save(res.token);
+        this.router.navigate(['/store-settings']);
+        this.loading = false
+      },
+      error:(err)=>{
+        this.loading=false;
+        console.log(err);
+      }
+    })
+    console.log(this.registerForm.value)
   }
 }

@@ -23,12 +23,12 @@
         </div>
       </div>
 
-      <form (ngSubmit)="onRegister()" #registerForm="ngForm" novalidate>
+      <form (ngSubmit)="onRegister()" [formGroup]="registerForm" novalidate>
 
         <!-- ====== STEP 1: Store Info ====== -->
         @if (currentStep === 1) {
           <div class="mb-3">
-            <label for="storeName" class="form-label fw-semibold small">اسم المتجر</label>
+            <label for="storeName" class="form-label fw-semibold small">رابط المتجر</label>
             <div class="input-group">
               <span class="input-group-text bg-white">
                 <i class="fas fa-store" style="color: var(--accent);"></i>
@@ -38,21 +38,26 @@
                 class="form-control form-control-lg" 
                 id="storeName" 
                 name="storeName"
-                [(ngModel)]="registerData.storeName"
-                #storeNameInput="ngModel"
-                placeholder="مثلاً: متجر النور" 
+                formControlName="storeName"
+                placeholder=" my-store " 
                 required
-                minlength="3">
+                minlength="3"
+                pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"  >
             </div>
-            @if (storeNameInput.invalid && (storeNameInput.dirty || storeNameInput.touched)) {
+            <div class="mt-2 bg-light p-2">
+              <p>متجرك سيكون متاح على </p>
+              <p>https://a7-store.com/<span class="text-accent">{{ registerForm.get('storeName')?.value || 'my-store' }}</span></p>
+            </div>
+            @if (registerForm.get('storeName')?.invalid && (registerForm.get('storeName')?.dirty || registerForm.get('storeName')?.touched)) {
               <div class="text-danger small mt-1">
-                اسم المتجر لازم يكون 3 حروف على الأقل.
+               <p> اسم المتجر لازم يكون 3 حروف على الأقل</p>
+               <p> حروف صغيره فقط او رقم او [-]</p>
               </div>
             }
           </div>
 
           <div class="mb-3">
-            <label for="ownerName" class="form-label fw-semibold small">اسم صاحب المتجر</label>
+            <label for="ownerName" class="form-label fw-semibold small">اسم  المتجر</label>
             <div class="input-group">
               <span class="input-group-text bg-white">
                 <i class="fas fa-user" style="color: var(--accent);"></i>
@@ -62,15 +67,14 @@
                 class="form-control form-control-lg" 
                 id="ownerName" 
                 name="ownerName"
-                [(ngModel)]="registerData.ownerName"
-                #ownerNameInput="ngModel"
-                placeholder="الاسم الكامل" 
+                formControlName="ownerName"
+                placeholder="A7-store " 
                 required
                 minlength="3">
             </div>
-            @if (ownerNameInput.invalid && (ownerNameInput.dirty || ownerNameInput.touched)) {
+            @if (registerForm.get('ownerName')?.invalid && (registerForm.get('ownerName')?.dirty || registerForm.get('ownerName')?.touched)) {
               <div class="text-danger small mt-1">
-                من فضلك أدخل اسمك الكامل.
+                ادخل اسم صحيح
               </div>
             }
           </div>
@@ -86,13 +90,12 @@
                 class="form-control form-control-lg" 
                 id="phone" 
                 name="phone"
-                [(ngModel)]="registerData.phone"
-                #phoneInput="ngModel"
+                formControlName="phone"
                 placeholder="01xxxxxxxxx" 
                 required
                 pattern="^01[0-9]{9}$">
             </div>
-            @if (phoneInput.invalid && (phoneInput.dirty || phoneInput.touched)) {
+            @if (registerForm.get('phone')?.invalid && (registerForm.get('phone')?.dirty || registerForm.get('phone')?.touched)) {
               <div class="text-danger small mt-1">
                 أدخل رقم موبايل صحيح (11 رقم يبدأ بـ 01).
               </div>
@@ -100,7 +103,7 @@
           </div>
 
           <button type="button" class="btn btn-accent w-100 btn-lg mb-3"
-                  [disabled]="storeNameInput.invalid || ownerNameInput.invalid || phoneInput.invalid"
+                  [disabled]="registerForm.invalid"
                   (click)="nextStep()">
             التالي
             <i class="fas fa-arrow-left ms-2"></i>
@@ -120,13 +123,12 @@
                 class="form-control form-control-lg" 
                 id="regEmail" 
                 name="email"
-                [(ngModel)]="registerData.email"
-                #emailInput="ngModel"
+                formControlName="email"
                 placeholder="name@store.com" 
                 required
                 email>
             </div>
-            @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+            @if (registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)) {
               <div class="text-danger small mt-1">
                 من فضلك أدخل بريد إلكتروني صحيح.
               </div>
@@ -141,11 +143,11 @@
                 class="form-control form-control-lg" 
                 id="regPassword" 
                 name="password"
-                [(ngModel)]="registerData.password"
-                #passwordInput="ngModel"
+                formControlName="password"
                 placeholder="••••••••" 
                 required 
-                minlength="6">
+                minlength="8"
+                pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$">
               <button class="btn btn-outline-secondary border" type="button" (click)="togglePasswordVisibility()">
                 @if (!showPassword) {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -159,9 +161,10 @@
                 }
               </button>
             </div>
-            @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+            @if (registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)) {
               <div class="text-danger small mt-1">
-                كلمة المرور لازم تكون 6 حروف على الأقل.
+                <p>كلمة المرور لازم تكون 8 حروف على الأقل.</p>
+                <p>يجب ان تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم.</p>
               </div>
             }
           </div>
@@ -174,8 +177,7 @@
                 class="form-control form-control-lg" 
                 id="confirmPassword" 
                 name="confirmPassword"
-                [(ngModel)]="registerData.confirmPassword"
-                #confirmPasswordInput="ngModel"
+                formControlName="confirmPassword"
                 placeholder="••••••••" 
                 required 
                 minlength="6">
@@ -192,7 +194,7 @@
                 }
               </button>
             </div>
-            @if (confirmPasswordInput.touched && !passwordsMatch) {
+            @if (registerForm.get('confirmPassword')?.touched && !passwordsMatch) {
               <div class="text-danger small mt-1">
                 كلمتين المرور مش متطابقين.
               </div>
@@ -200,7 +202,7 @@
           </div>
 
           <div class="form-check mb-4">
-            <input class="form-check-input" type="checkbox" id="agreeTerms" name="agreeTerms" [(ngModel)]="registerData.agreeTerms">
+            <input class="form-check-input" type="checkbox" id="agreeTerms" name="agreeTerms" formControlName="agreeTerms">
             <label class="form-check-label text-secondary small" for="agreeTerms">
               أوافق على <a href="#" class="text-accent fw-semibold">الشروط والأحكام</a> و<a href="#" class="text-accent fw-semibold">سياسة الخصوصية</a>
             </label>
@@ -212,10 +214,15 @@
               رجوع
             </button>
             <button type="submit" 
-                    [disabled]="registerForm.invalid || !passwordsMatch || !registerData.agreeTerms" 
+                    [disabled]="registerForm.invalid || !passwordsMatch || registerForm.get('agreeTerms')?.value === false" 
                     class="btn btn-accent btn-lg flex-fill">
-              <i class="fas fa-rocket me-2"></i>
-              افتح متجرك
+                @if(loading){
+                  <app-spinner></app-spinner>
+                }
+                @else{
+                  <i class="fas fa-rocket me-2"></i>
+                  انشاء حساب
+                }
             </button>
           </div>
         }

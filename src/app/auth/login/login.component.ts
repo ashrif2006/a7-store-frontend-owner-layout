@@ -5,11 +5,12 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { TokenService } from '../../services/token.service';
 import { loginResponse } from '../../models/auth.interface';
+import { SpinnerComponent } from '../../shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule , ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, RouterModule , ReactiveFormsModule , SpinnerComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
