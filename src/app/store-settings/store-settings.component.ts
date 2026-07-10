@@ -1,4 +1,4 @@
-import { Component, signal, computed, ViewChild, ElementRef, inject , OnInit } from '@angular/core';
+import { Component, signal, computed, ViewChild, ElementRef, inject , OnInit, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
@@ -27,21 +27,10 @@ export class StoreSettingsComponent implements OnInit {
 
   settingsForm: FormGroup;
   storeService = inject(StoreService);
+  private fb = inject( FormBuilder);
 
   ngOnInit(){
-    this.storeService.getStore().subscribe({
-      next:(res)=>{
-        this.storeService.setStore(res.store);
-        console.log(res.store)
-        this.settingsForm.patchValue({
-          name: res.store.name,
-          slug: res.store.slug,
-          whatsapp_number: res.store.whatsapp_number, 
-        });
-        this.logoPreviewUrl.set(res.store.logo_url)
-
-      }
-    })
+    this.storeService.loadStore();
   }
 
   // computed initial from store name
@@ -50,13 +39,27 @@ export class StoreSettingsComponent implements OnInit {
     return name ? name[0] : 'م';
   });
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.settingsForm = this.fb.group({
       name:             ['', Validators.required],
       slug:             ['', [Validators.required, Validators.pattern(/^[a-z0-9-]+$/)]],
       whatsapp_number:  ['', [Validators.pattern(/^[0-9]{10,11}$/)]],
       email:            [{ value: '', disabled: true }],
     });
+
+    effect(()=>{
+      const currentStore = this.storeService.store();
+      if(currentStore){
+        this.settingsForm.patchValue({
+          name:currentStore.name,
+          slug:currentStore.slug,
+          whatsapp_number:currentStore.whatsapp_number
+        });
+        this.logoPreviewUrl.set(currentStore.logo_url)
+      }
+      },
+      {allowSignalWrites:true}
+    )
   }
 
   isInvalid(field: string): boolean {
