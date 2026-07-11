@@ -31,6 +31,16 @@ export class ProductService {
     })
   }
 
+  deleteProduct(id:string){
+    return this.http.delete(`${environment.apiUrl}/products/${id}`)
+  }
+
+  removeProduct(id: string) {
+  this.products.update(products =>
+    products.filter(product => product.id !== id)
+  );
+}
+
   clearProducts():void{
     this.products.set([])
   }

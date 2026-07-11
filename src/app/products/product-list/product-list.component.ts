@@ -26,6 +26,7 @@ export class ProductListComponent   {
   searchQuery  = '';
   skeletons    = Array(8).fill(0);
   productToDelete = signal<Product | null>(null);
+  errorMessage = signal<string>('');
 
   productService = inject(ProductService);
 
@@ -76,13 +77,36 @@ export class ProductListComponent   {
 
   // ── Delete flow — wire to ProductService later ──
   openDeleteModal(product: Product) {
-
+    this.productToDelete.set(product);
+    this.errorMessage.set('');
   }
 
   confirmDelete() {
-    // if (!this.productToDelete()) return;
-    // // TODO: call ProductService.deleteProduct(id) then remove from signal
-    // // this.products.update(list => list.filter(p => p.id !== this.productToDelete()!.id));
-    // // this.productToDelete.set(null);
+    const product = this.productToDelete();
+    if(!product) return;
+
+    this.isDeleting.set(true);
+    this.errorMessage.set('');
+    this.productService.deleteProduct(product.id).subscribe({
+      next:()=>{
+        this.productService.removeProduct(product.id);
+        this.productToDelete.set(null);
+        this.isDeleting.set(false);
+        const bootstrap = (window as any).bootstrap;
+        if (bootstrap) {
+          const modalEl = document.getElementById('deleteProductModal');
+          if (modalEl) {
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modalInstance.hide();
+          }
+        }
+      },
+      error:(err)=>{
+        console.log(err);
+        this.isDeleting.set(false);
+        const msg = err.error?.message || 'لا يمكن حذف هذا المنتج لأنه موجود في طلب نشط أو مرتبط ببيانات أخرى.';
+        this.errorMessage.set(msg);
+      }
+    })
   }
 }
