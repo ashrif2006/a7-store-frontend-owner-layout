@@ -1,1 +1,205 @@
-<p>product-list works!</p>
+<!-- ===== Page Header ===== -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <div>
+    <span class="eyebrow">إدارة المخزون</span>
+    <h1 class="h3 mt-1 mb-0">المنتجات</h1>
+    <p class="text-slate mb-0 mt-1" style="font-size:0.85rem;">
+      {{ products().length }} من {{ MAX_PRODUCTS }} منتج
+    </p>
+  </div>
+  <a
+    routerLink="/dashboard/products/new"
+    class="btn btn-accent d-none d-md-inline-flex align-items-center gap-2"
+    [class.disabled]="products().length >= MAX_PRODUCTS">
+    <i class="fa-solid fa-plus"></i>
+    إضافة منتج
+  </a>
+</div>
+
+<!-- ===== Search + Filters ===== -->
+<div class="d-flex flex-wrap gap-3 align-items-center mb-4">
+
+  <!-- Search -->
+  <div class="position-relative" style="flex:1; min-width:200px; max-width:360px;">
+    <i class="fa-solid fa-magnifying-glass position-absolute text-slate-light"
+       style="left:0.8rem; top:50%; transform:translateY(-50%);"></i>
+    <input
+      type="search"
+      class="form-control"
+      style="padding-right:0.85rem; padding-left:2.4rem;"
+      placeholder="ابحث باسم المنتج…"
+      [(ngModel)]="searchQuery"
+      (ngModelChange)="onSearch()">
+  </div>
+
+  <!-- Filter chips -->
+  <div class="filter-bar">
+    @for (chip of filterChips; track chip.key) {
+      <span
+        class="filter-chip"
+        [class.active]="activeFilter() === chip.key"
+        (click)="setFilter(chip.key)">
+        {{ chip.label }} ({{ getCount(chip.key) }})
+      </span>
+    }
+  </div>
+
+</div>
+
+<!-- ===== Loading State ===== -->
+@if (isLoading()) {
+  <div class="row g-3">
+    @for (i of skeletons; track i) {
+      <div class="col-6 col-md-4 col-xl-3">
+        <div class="skeleton" style="aspect-ratio:1/1; border-radius:var(--r-md);"></div>
+        <div class="skeleton mt-2" style="height:14px; width:80%;"></div>
+        <div class="skeleton mt-2" style="height:14px; width:40%;"></div>
+      </div>
+    }
+  </div>
+}
+
+<!-- ===== Empty State ===== -->
+@else if (filteredProducts().length === 0) {
+  <div class="text-center py-5">
+    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
+         style="width:64px; height:64px; background:var(--paper-dim); color:var(--slate-light);">
+      <i class="fa-solid fa-box-open fa-lg"></i>
+    </div>
+    <h5 class="mb-1">
+      {{ products().length === 0 ? 'لسه مفيش منتجات' : 'لا توجد منتجات تطابق البحث' }}
+    </h5>
+    <p class="text-slate mb-3">
+      {{ products().length === 0 ? 'ابدأ بإضافة أول منتج في متجرك.' : 'جرب كلمة بحث أو فلتر مختلف.' }}
+    </p>
+    @if (products().length === 0) {
+      <a routerLink="/dashboard/products/new" class="btn btn-accent">
+        <i class="fa-solid fa-plus me-1"></i> إضافة منتج جديد
+      </a>
+    }
+  </div>
+}
+
+<!-- ===== Products Grid ===== -->
+@else {
+  <div class="row g-3">
+
+    @for (product of filteredProducts(); track product.id) {
+      <div class="col-6 col-md-4 col-xl-3">
+        <div class="product-card" [class.opacity-75]="!product.is_available">
+
+          <!-- Image -->
+          <div class="p-img">
+            @if (product.images && product.images.length > 0) {
+              <img [src]="product.images[0].image_url" [alt]="product.name">
+            } @else {
+              <i class="fa-solid fa-image fa-2x"></i>
+            }
+          </div>
+
+          <!-- Body -->
+          <div class="p-body">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <div class="p-name">{{ product.name }}</div>
+              <span class="avail-badge" [class.on]="product.is_available" [class.off]="!product.is_available">
+                {{ product.is_available ? 'متاح' : 'مخفي' }}
+              </span>
+            </div>
+
+            <!-- Price -->
+            <div class="p-price">
+              @if (product.sale_price && product.sale_price > 0 && product.sale_price < product.price) {
+                {{ product.sale_price }} ج.م
+                <span class="p-sale">{{ product.price }}</span>
+              } @else {
+                {{ product.price }} ج.م
+              }
+            </div>
+
+            <!-- Stock -->
+            <div class="p-stock mt-1" [class.low]="product.stock > 0 && product.stock <= 5">
+              @if (product.stock <= 0) {
+                نفد المخزون
+              } @else if (product.stock <= 5) {
+                <i class="fa-solid fa-triangle-exclamation me-1"></i> متبقي {{ product.stock }} فقط
+              } @else {
+                المخزون: {{ product.stock }}
+              }
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="p-actions">
+            <a
+              [routerLink]="['/products', product.id, 'edit']"
+              class="btn btn-ghost btn-sm flex-fill">
+              <i class="fa-solid fa-pen-to-square me-1"></i> تعديل
+            </a>
+            <button
+              class="btn btn-danger-soft btn-sm"
+              (click)="openDeleteModal(product)"
+              title="حذف">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
+
+    <!-- Add new placeholder (only if under limit) -->
+    @if (products().length < MAX_PRODUCTS) {
+      <div class="col-6 col-md-4 col-xl-3">
+        <a
+          routerLink="/dashboard/products/new"
+          class="product-card text-decoration-none d-flex align-items-center justify-content-center"
+          style="min-height:200px; border-style:dashed; background:transparent;">
+          <div class="text-center p-4">
+            <div class="mx-auto mb-2 d-flex align-items-center justify-content-center rounded-circle"
+                 style="width:48px; height:48px; background:var(--accent-soft); color:var(--accent-dark);">
+              <i class="fa-solid fa-plus"></i>
+            </div>
+            <span class="fw-semibold text-slate">إضافة منتج جديد</span>
+          </div>
+        </a>
+      </div>
+    }
+
+  </div>
+}
+
+<!-- ===== Delete Modal ===== -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0" style="border-radius:var(--r-md);">
+      <div class="modal-body p-4 text-center">
+
+        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
+             style="width:60px; height:60px; background:var(--warn-soft); color:var(--warn);">
+          <i class="fa-solid fa-trash-can fa-lg"></i>
+        </div>
+
+        <h5 class="mb-2">حذف المنتج؟</h5>
+        <p class="text-slate mb-4">
+          هتشيل <strong>{{ productToDelete()?.name }}</strong> نهائيًا من المتجر. الخطوة دي مش ممكن ترجعها.
+        </p>
+
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-ghost" data-bs-dismiss="modal">إلغاء</button>
+          <button
+            class="btn btn-danger-soft"
+            [disabled]="isDeleting()"
+            (click)="confirmDelete()">
+            @if (isDeleting()) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            } @else {
+              <i class="fa-solid fa-trash-can me-1"></i>
+            }
+            حذف
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

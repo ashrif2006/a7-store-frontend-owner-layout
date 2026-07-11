@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { StoreService } from '../../../services/store.service';
+import { PageTitleService } from '../../../services/pageTitle.service';
 
 @Component({
   selector: 'app-topbar',
@@ -8,8 +9,9 @@ import { StoreService } from '../../../services/store.service';
 })
 export class TopbarComponent {
   storeService = inject(StoreService);
+  private pageTitleService = inject(PageTitleService);
 
-  pageTitle    = signal('لوحة التحكم'); 
+  pageTitle    = this.pageTitleService.title; 
   pendingCount = signal(3);
 
     storeInitial = computed(()=>{
