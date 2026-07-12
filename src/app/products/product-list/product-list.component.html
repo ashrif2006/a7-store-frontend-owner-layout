@@ -8,7 +8,7 @@
     </p>
   </div>
   <a
-    routerLink="/dashboard/products/new"
+    routerLink="/products/new"
     class="btn btn-accent d-none d-md-inline-flex align-items-center gap-2"
     [class.disabled]="products().length >= MAX_PRODUCTS">
     <i class="fa-solid fa-plus"></i>
@@ -132,6 +132,7 @@
           <div class="p-actions">
             <a
               [routerLink]="['/products', product.id, 'edit']"
+              (click)="onEdit(product)"
               class="btn btn-ghost btn-sm flex-fill">
               <i class="fa-solid fa-pen-to-square me-1"></i> تعديل
             </a>
@@ -153,7 +154,7 @@
     @if (products().length < MAX_PRODUCTS) {
       <div class="col-6 col-md-4 col-xl-3">
         <a
-          routerLink="/dashboard/products/new"
+          routerLink="/products/new"
           class="product-card text-decoration-none d-flex align-items-center justify-content-center"
           style="min-height:200px; border-style:dashed; background:transparent;">
           <div class="text-center p-4">
@@ -211,3 +212,17 @@
     </div>
   </div>
 </div>
+
+<!-- ===== Loading Toast ===== -->
+@if (isLoading()) {
+  <div class="toast-container position-fixed top-0 start-50 translate-middle-x mt-4" style="z-index:9999;">
+    <div class="toast show align-items-center border-0" style="background:var(--ink); color:#fff; border-radius:var(--r-sm);">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="color:var(--accent);"></span>
+          <span>جاري تحميل المنتجات...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+}

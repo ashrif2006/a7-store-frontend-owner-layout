@@ -1,1 +1,254 @@
-<p>product-form works!</p>
+<!-- ===== Page Header ===== -->
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a routerLink="products" class="btn btn-ghost btn-sm">
+    <i class="fa-solid fa-arrow-right"></i>
+  </a>
+  <div>
+    <span class="eyebrow">{{ isEditMode() ? 'تعديل منتج' : 'إضافة منتج' }}</span>
+    <h1 class="h3 mt-1 mb-0">{{ isEditMode() ? productForm.get('name')?.value || 'تعديل المنتج' : 'منتج جديد' }}</h1>
+  </div>
+</div>
+
+<form [formGroup]="productForm" (ngSubmit)="onSave()">
+  <div class="row g-4 align-items-start">
+
+    <!-- ===== LEFT: basic info + images ===== -->
+    <div class="col-lg-8">
+
+      <!-- Basic Info -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-pen-to-square text-accent-dark"></i>
+          المعلومات الأساسية
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">اسم المنتج <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="name"
+            placeholder="مثال: طقم خواتم فضة 925"
+            [class.is-invalid]="isInvalid('name')">
+          <div class="invalid-feedback">من فضلك أدخل اسم المنتج.</div>
+        </div>
+
+        <div class="mb-0">
+          <label class="form-label">الوصف</label>
+          <textarea
+            class="form-control"
+            formControlName="description"
+            rows="4"
+            placeholder="اوصف المنتج للعميل — المواد، الحجم، أي تفاصيل مهمة…">
+          </textarea>
+          <p class="text-slate mt-1 mb-0" style="font-size:0.8rem;">
+            الوصف بيساعد العميل يقرر اشتراء المنتج.
+          </p>
+        </div>
+      </div>
+
+      <!-- Images -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-images text-accent-dark"></i>
+          صور المنتج
+        </div>
+
+        <!-- Edit mode: show existing images (read-only) -->
+        @if (isEditMode()) {
+          <div class="mb-3">
+            <label class="form-label">الصور الحالية</label>
+            @if (existingImages().length > 0) {
+              <div class="img-preview-grid">
+                @for (img of existingImages(); track img.image_url) {
+                  <div class="img-preview-item">
+                    <img [src]="img.image_url" alt="صورة المنتج">
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-slate mb-0" style="font-size:0.85rem;">لا توجد صور لهذا المنتج.</p>
+            }
+          </div>
+          <div class="alert alert-warning py-2" style="font-size:0.82rem; border-radius:var(--r-sm);">
+            <i class="fa-solid fa-circle-info me-1"></i>
+            تعديل الصور غير متاح حالياً — الصور ثابتة في وضع التعديل.
+          </div>
+        }
+
+        <!-- Create mode: upload zone -->
+        @else {
+          <div
+            class="img-upload-zone"
+            [class.dragover]="isDragging()"
+            (click)="imgInput.click()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="isDragging.set(false)"
+            (drop)="onDrop($event)">
+            <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2" style="color:var(--slate-light);"></i>
+            <p class="fw-semibold mb-0">
+              اسحب الصور هنا أو <span style="color:var(--accent);">اختار من جهازك</span>
+            </p>
+            <p class="text-slate mt-1 mb-0" style="font-size:0.82rem;">
+              PNG, JPG حتى 5MB — حد أقصى 3 صور، أول صورة هتكون الرئيسية
+            </p>
+            <input
+              #imgInput
+              type="file"
+              multiple
+              accept="image/*"
+              class="d-none"
+              (change)="onFilesSelected($event)">
+          </div>
+
+          <!-- Preview selected images -->
+          @if (previewImages().length > 0) {
+            <div class="img-preview-grid mt-3">
+              @for (img of previewImages(); track img.url; let i = $index) {
+                <div class="img-preview-item">
+                  <img [src]="img.url" alt="صورة {{ i + 1 }}">
+                  <button type="button" class="remove-img" (click)="removePreviewImage(i)">
+                    <i class="fa-solid fa-xmark" style="font-size:0.65rem;"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+
+    </div>
+
+    <!-- ===== RIGHT: price + stock + visibility ===== -->
+    <div class="col-lg-4">
+
+      <!-- Pricing -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-egyptian-pound-sign text-accent-dark"></i>
+          التسعير
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">السعر الأصلي <span class="text-danger">*</span></label>
+          <div class="input-group" [class.is-invalid]="isInvalid('price')">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="price"
+              placeholder="0"
+              min="0"
+              [class.is-invalid]="isInvalid('price')">
+            <span class="input-group-text">ج.م</span>
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="isInvalid('price')">
+            من فضلك أدخل سعر صحيح أكبر من صفر.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            سعر الخصم <small class="text-slate">(اختياري)</small>
+          </label>
+          <div class="input-group">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="sale_price"
+              placeholder="0"
+              min="0"
+              [class.is-invalid]="isInvalid('sale_price')">
+            <span class="input-group-text">ج.م</span>
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="isInvalid('sale_price')">
+            سعر الخصم لازم يكون أقل من السعر الأصلي.
+          </div>
+        </div>
+
+        <!-- Discount preview -->
+        @if (discountPreview()) {
+          <div class="price-compare">
+            <div>
+              السعر بعد الخصم:
+              <strong class="num">{{ productForm.get('sale_price')?.value }} ج.م</strong>
+            </div>
+            <div>
+              التوفير: <span class="discount-pct">{{ discountPreview() }}% خصم</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Stock -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-boxes-stacked text-accent-dark"></i>
+          المخزون
+        </div>
+
+        <div class="mb-0">
+          <label class="form-label">الكمية المتاحة <span class="text-danger">*</span></label>
+          <div class="input-group" [class.is-invalid]="isInvalid('stock')">
+            <input
+              type="number"
+              class="form-control"
+              formControlName="stock"
+              placeholder="0"
+              min="0"
+              [class.is-invalid]="isInvalid('stock')">
+            <span class="input-group-text">قطعة</span>
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="isInvalid('stock')">
+            من فضلك أدخل كمية صحيحة.
+          </div>
+        </div>
+      </div>
+
+      <!-- Visibility -->
+      <div class="form-section">
+        <div class="form-section-title border-0 pb-0 mb-0">
+          <i class="fa-solid fa-eye text-accent-dark"></i>
+          إعدادات العرض
+        </div>
+        <div class="mt-3">
+          <div class="form-check form-switch d-flex align-items-center justify-content-between px-0 gap-2">
+            <label class="form-check-label fw-semibold" for="isAvailable">
+              إظهار المنتج في المتجر
+            </label>
+            <input
+              class="form-check-input ms-0"
+              type="checkbox"
+              id="isAvailable"
+              formControlName="is_available">
+          </div>
+          <p class="text-slate mt-1 mb-0" style="font-size:0.82rem;">
+            لو عطّلته، المنتج مش هيظهر للعملاء.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</form>
+
+<!-- ===== Sticky Save Bar ===== -->
+<div class="actions-bar">
+  @if (errorMsg()) {
+    <span class="text-danger me-auto" style="font-size:0.85rem;">
+      <i class="fa-solid fa-circle-exclamation me-1"></i>{{ errorMsg() }}
+    </span>
+  }
+  <a routerLink="/products" class="btn btn-ghost">إلغاء</a>
+  <button
+    type="button"
+    class="btn btn-accent"
+    [disabled]="isSaving()"
+    (click)="onSave()">
+    @if (isSaving()) {
+      <span class="spinner-border spinner-border-sm me-1"></span>
+    } @else {
+      <i class="fa-solid fa-floppy-disk me-1"></i>
+    }
+    {{ isEditMode() ? 'حفظ التغييرات' : 'حفظ المنتج' }}
+  </button>
+</div>

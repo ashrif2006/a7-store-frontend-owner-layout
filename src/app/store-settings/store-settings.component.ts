@@ -1,14 +1,15 @@
-import { Component, signal, computed, ViewChild, ElementRef, inject , OnInit, effect } from '@angular/core';
+import { Component, signal, computed, ViewChild, ElementRef, inject, OnInit, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { StoreService } from '../services/store.service';
 import { UpdateStoreRequest, updateStoreResponse } from '../models/store.interface';
+import { SpinnerComponent } from '../shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-store-settings',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, FormsModule, NgIf ],
+  imports: [RouterLink, ReactiveFormsModule, FormsModule, NgIf, SpinnerComponent],
   templateUrl: './store-settings.component.html',
   styleUrl: './store-settings.component.css',
 })
@@ -17,20 +18,35 @@ export class StoreSettingsComponent implements OnInit {
   @ViewChild('saveToast') saveToastEl!: ElementRef;
 
   // ── UI state — wire to StoreService later ──
-  isSaving      = signal(false);
-  errorMsg      = signal('');
-  isFirstSetup  = signal(true);       // set false after first save
+  isLoading = signal(true);
+  isSaving = signal(false);
+  errorMsg = signal('');
+  isFirstSetup = signal(true);       // set false after first save
   logoPreviewUrl = signal<string | null>(null);
   selectedLogoFile: File | null = null;
-  logoRemoved   = false;
+  logoRemoved = false;
   deleteConfirmText = '';
 
   settingsForm: FormGroup;
   storeService = inject(StoreService);
-  private fb = inject( FormBuilder);
+  private fb = inject(FormBuilder);
 
-  ngOnInit(){
-    this.storeService.loadStore();
+  ngOnInit() {
+    if (this.storeService.store()) {
+      this.isLoading.set(false);
+    } else {
+      this.isLoading.set(true);
+      this.storeService.getStore().subscribe({
+        next: (res) => {
+          this.storeService.setStore(res.store);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.log(err);
+          this.isLoading.set(false);
+        }
+      });
+    }
   }
 
   // computed initial from store name
@@ -41,24 +57,24 @@ export class StoreSettingsComponent implements OnInit {
 
   constructor() {
     this.settingsForm = this.fb.group({
-      name:             ['', Validators.required],
-      slug:             ['', [Validators.required, Validators.pattern(/^[a-z0-9-]+$/)]],
-      whatsapp_number:  ['', [Validators.pattern(/^[0-9]{10,11}$/)]],
-      email:            [{ value: '', disabled: true }],
+      name: ['', Validators.required],
+      slug: ['', [Validators.required, Validators.pattern(/^[a-z0-9-]+$/)]],
+      whatsapp_number: ['', [Validators.pattern(/^[0-9]{10,11}$/)]],
+      email: [{ value: '', disabled: true }],
     });
 
-    effect(()=>{
+    effect(() => {
       const currentStore = this.storeService.store();
-      if(currentStore){
+      if (currentStore) {
         this.settingsForm.patchValue({
-          name:currentStore.name,
-          slug:currentStore.slug,
-          whatsapp_number:currentStore.whatsapp_number
+          name: currentStore.name,
+          slug: currentStore.slug,
+          whatsapp_number: currentStore.whatsapp_number
         });
         this.logoPreviewUrl.set(currentStore.logo_url)
       }
-      },
-      {allowSignalWrites:true}
+    },
+      { allowSignalWrites: true }
     )
   }
 
@@ -123,18 +139,18 @@ export class StoreSettingsComponent implements OnInit {
     this.isSaving.set(true);
     this.errorMsg.set('');
 
-    const data :UpdateStoreRequest ={
-      name:this.settingsForm.value.name!,
-      slug:this.settingsForm.value.slug!,
-      whatsapp_number:this.settingsForm.value.whatsapp_number!,
-      telegram_chat_id:null
+    const data: UpdateStoreRequest = {
+      name: this.settingsForm.value.name!,
+      slug: this.settingsForm.value.slug!,
+      whatsapp_number: this.settingsForm.value.whatsapp_number!,
+      telegram_chat_id: null
     };
 
     this.storeService.updateStore(data).subscribe({
-      next:(res)=>{
+      next: (res) => {
         console.log(res)
         this.storeService.setStore(res.store);
-        if(this.selectedLogoFile){
+        if (this.selectedLogoFile) {
           this.uploadLogo();
           return;
         }
@@ -142,7 +158,7 @@ export class StoreSettingsComponent implements OnInit {
         this.isFirstSetup.set(false);
         this.showSuccessToast();
       },
-      error:(err)=>{
+      error: (err) => {
         console.log(err);
         this.isSaving.set(false);
         this.errorMsg.set('حدث خطأ أثناء حفظ التغييرات');
