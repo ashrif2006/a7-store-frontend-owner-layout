@@ -1,0 +1,139 @@
+/* Status tabs */
+.status-tabs {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.status-tab {
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--slate);
+  padding: 0.6rem 1.1rem;
+  border-bottom: 2.5px solid transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.12s;
+  margin-bottom: -1px;
+}
+.status-tab:hover { color: var(--ink); }
+.status-tab.active { color: var(--accent-dark); border-bottom-color: var(--accent); }
+
+.tab-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.1rem 0.4rem;
+  border-radius: 100px;
+  margin-right: 0.35rem;
+}
+.tab-count.warn-bg { background: var(--warn); }
+
+/* Order card */
+.order-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin-bottom: 0.85rem;
+  transition: box-shadow 0.15s;
+}
+.order-card:hover { box-shadow: var(--shadow-card); }
+
+.order-card.pending   { border-right: 4px solid var(--warn); }
+.order-card.confirmed { border-right: 4px solid var(--accent); }
+.order-card.shipped   { border-right: 4px solid #3a7ee8; }
+.order-card.delivered { border-right: 4px solid #52a849; }
+.order-card.cancelled { border-right: 4px solid var(--slate-light); }
+
+.order-card-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+}
+.customer-name { font-weight: 700; font-size: 0.95rem; }
+.order-id      { color: var(--slate); font-size: 0.82rem; font-family: var(--font-mono); }
+.order-time    { color: var(--slate-light); font-size: 0.82rem; }
+.order-total   { font-family: var(--font-mono); font-weight: 700; font-size: 1rem; }
+
+/* Chevron animation */
+.chevron-icon {
+  color: var(--slate-light);
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.chevron-icon.rotated { transform: rotate(180deg); }
+
+/* Order body */
+.order-card-body {
+  padding: 0 1.2rem 1.2rem;
+  border-top: 1px solid var(--line);
+}
+.order-detail-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.order-detail-row:last-of-type { border-bottom: none; }
+.detail-label {
+  font-size: 0.82rem;
+  color: var(--slate-light);
+  width: 90px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.detail-val { font-size: 0.9rem; font-weight: 500; }
+
+/* Order items */
+.order-items-list { margin-top: 0.5rem; }
+.order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.9rem;
+}
+.order-item-row:last-child { border-bottom: none; }
+.order-item-name  { font-weight: 600; }
+.order-item-qty   { color: var(--slate); font-size: 0.82rem; margin-top: 1px; }
+.order-item-price { font-family: var(--font-mono); font-weight: 700; font-size: 0.92rem; flex-shrink: 0; }
+
+/* Order actions */
+.order-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  align-items: center;
+}
+
+/* WhatsApp button */
+.btn-whatsapp { background: #25d366; color: #fff; font-weight: 700; border: none; }
+.btn-whatsapp:hover { background: #1ab756; color: #fff; }
+
+/* Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--paper-dim) 25%, #ececec 37%, var(--paper-dim) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes skeleton-loading {
+  0%   { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+
+.text-slate-light { color: var(--slate-light); }

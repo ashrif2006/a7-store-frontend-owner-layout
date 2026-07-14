@@ -1,1 +1,276 @@
-<p>order-list works!</p>
+<!-- ===== Page Header ===== -->
+<div
+  class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4"
+>
+  <div>
+    <span class="eyebrow">إدارة الطلبات</span>
+    <h1 class="h3 mt-1 mb-0">الطلبات</h1>
+  </div>
+  <div class="position-relative" style="max-width: 300px; width: 100%">
+    <i
+      class="fa-solid fa-magnifying-glass position-absolute text-slate-light"
+      style="left: 0.8rem; top: 50%; transform: translateY(-50%)"
+    ></i>
+    <input
+      type="search"
+      class="form-control"
+      style="padding-right: 0.85rem; padding-left: 2.4rem"
+      placeholder="ابحث باسم العميل أو رقم الطلب…"
+      [(ngModel)]="searchQuery"
+    />
+  </div>
+</div>
+
+<!-- ===== Status Tabs ===== -->
+<div class="status-tabs mb-4">
+  @for (tab of statusTabs; track tab.key) {
+    <button
+      class="status-tab"
+      [class.active]="activeStatus() === tab.key"
+      [class.pending-tab]="tab.key === 'PENDING'"
+      (click)="setStatus(tab.key)"
+    >
+      {{ tab.label }}
+      @if (tab.key === "all" || tab.key === "PENDING") {
+        <span class="tab-count" [class.warn-bg]="tab.key === 'PENDING'">
+          {{ getCount(tab.key) }}
+        </span>
+      }
+    </button>
+  }
+</div>
+
+<!-- ===== Loading ===== -->
+@if (isLoading()) {
+  <div class="d-flex flex-column gap-3">
+    @for (i of skeletons; track i) {
+      <div
+        class="skeleton"
+        style="height: 72px; border-radius: var(--r-md)"
+      ></div>
+    }
+  </div>
+}
+
+<!-- ===== Empty ===== -->
+@else if (filteredOrders().length === 0) {
+  <div class="text-center py-5">
+    <div
+      class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
+      style="
+        width: 64px;
+        height: 64px;
+        background: var(--paper-dim);
+        color: var(--slate-light);
+      "
+    >
+      <i class="fa-solid fa-clipboard-list fa-lg"></i>
+    </div>
+    <h5 class="mb-1">لا توجد طلبات</h5>
+    <p class="text-slate mb-0">مفيش طلبات تطابق الفلتر أو البحث الحالي.</p>
+  </div>
+}
+
+<!-- ===== Orders List ===== -->
+@else {
+  <div class="orders-list">
+    @for (order of filteredOrders(); track order.id) {
+      <div class="order-card" [ngClass]="order.status.toLowerCase()">
+        <!-- Header (clickable to expand) -->
+        <div class="order-card-header" (click)="toggleOrder(order.id)">
+          <div>
+            <div class="customer-name">{{ order.customer_name }}</div>
+            <div class="order-id">#{{ order.id.slice(0, 8) }}</div>
+          </div>
+
+          <span class="badge-status" [ngClass]="statusBadge(order.status)">
+            {{ statusLabel(order.status) }}
+          </span>
+
+          <div class="order-time me-auto">{{ timeAgo(order.createdAt) }}</div>
+          <div class="order-total num">{{ order.totalPrice }} ج.م</div>
+
+          <i
+            class="fa-solid fa-chevron-down chevron-icon"
+            [class.rotated]="isExpanded(order.id)"
+          ></i>
+        </div>
+
+        <!-- Body (expandable) -->
+        @if (isExpanded(order.id)) {
+          <div class="order-card-body">
+            <!-- Customer details -->
+            <div class="order-detail-row">
+              <span class="detail-label">
+                <i class="fa-solid fa-user me-1"></i> العميل
+              </span>
+              <span class="detail-val">{{ order.customer_name }}</span>
+            </div>
+            <div class="order-detail-row">
+              <span class="detail-label">
+                <i class="fa-solid fa-phone me-1"></i> التليفون
+              </span>
+              <span class="detail-val">{{ order.customer_phone }}</span>
+            </div>
+            <div class="order-detail-row">
+              <span class="detail-label">
+                <i class="fa-solid fa-location-dot me-1"></i> العنوان
+              </span>
+              <span class="detail-val">{{ order.customer_address }}</span>
+            </div>
+            @if (order.notes) {
+              <div class="order-detail-row">
+                <span class="detail-label">
+                  <i class="fa-solid fa-note-sticky me-1"></i> ملاحظات
+                </span>
+                <span class="detail-val text-slate">{{ order.notes }}</span>
+              </div>
+            }
+
+            <!-- Order items -->
+            <div class="mt-3 mb-1">
+              <span class="eyebrow">المنتجات</span>
+            </div>
+            <div class="order-items-list">
+              @for (item of order.items; track item.productId) {
+                <div class="order-item-row">
+                  <div>
+                    <div class="order-item-name">{{ item.product.name }}</div>
+                    <div class="order-item-qty">× {{ item.quantity }}</div>
+                  </div>
+                  <div class="order-item-price num">
+                    {{ item.price_at_purchase * item.quantity }} ج.م
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Total -->
+            <div
+              class="d-flex justify-content-between align-items-center mt-3 pt-2"
+              style="border-top: 1.5px solid var(--line)"
+            >
+              <span class="text-slate fw-semibold">الإجمالي</span>
+              <span class="num fw-bold" style="font-size: 1.05rem"
+                >{{ order.totalPrice }} ج.م</span
+              >
+            </div>
+
+            <!-- Actions -->
+            <div class="order-actions">
+              <!-- Status action buttons -->
+              @switch (order.status) {
+                @case ("PENDING") {
+                  <button
+                    class="btn btn-accent btn-sm"
+                    [disabled]="updatingOrderId() === order.id"
+                    (click)="updateStatus(order, 'CONFIRMED')"
+                  >
+                    @if (updatingOrderId() === order.id) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                      جاري التنفيذ...
+                    } @else {
+                      <i class="fa-solid fa-check me-1"></i>
+                      قبول الطلب
+                    }
+                  </button>
+
+                  <button
+                    class="btn btn-danger-soft btn-sm"
+                    [disabled]="updatingOrderId() === order.id"
+                    (click)="updateStatus(order, 'CANCELLED')"
+                  >
+                    @if (updatingOrderId() === order.id) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                      جاري التنفيذ...
+                    } @else {
+                      <i class="fa-solid fa-xmark me-1"></i>
+                      رفض الطلب
+                    }
+                  </button>
+                }
+                @case ("CONFIRMED") {
+                  <button
+                    class="btn btn-ink btn-sm"
+                    [disabled]="updatingOrderId() === order.id"
+                    (click)="updateStatus(order, 'SHIPPED')"
+                  >
+                    @if (updatingOrderId() === order.id) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                      جاري التنفيذ...
+                    } @else {
+                      <i class="fa-solid fa-truck me-1"></i>
+                      تحديث: في الشحن
+                    }
+                  </button>
+
+                  <button
+                    class="btn btn-danger-soft btn-sm"
+                    [disabled]="updatingOrderId() === order.id"
+                    (click)="updateStatus(order, 'CANCELLED')"
+                  >
+                    @if (updatingOrderId() === order.id) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                      جاري التنفيذ...
+                    } @else {
+                      <i class="fa-solid fa-xmark me-1"></i>
+                      إلغاء الطلب
+                    }
+                  </button>
+                }
+                @case ("SHIPPED") {
+                  <button
+                    class="btn btn-accent btn-sm"
+                    [disabled]="updatingOrderId() === order.id"
+                    (click)="updateStatus(order, 'DELIVERED')"
+                  >
+                    @if (updatingOrderId() === order.id) {
+                      <span
+                        class="spinner-border spinner-border-sm me-2"
+                      ></span>
+                      جاري التنفيذ...
+                    } @else {
+                      <i class="fa-solid fa-box-open me-1"></i>
+                      تأكيد الاستلام
+                    }
+                  </button>
+                }
+                @case ("DELIVERED") {
+                  <span class="text-slate" style="font-size: 0.88rem">
+                    <i
+                      class="fa-solid fa-circle-check me-1"
+                      style="color: var(--accent)"
+                    ></i>
+                    تم التوصيل بنجاح
+                  </span>
+                }
+                @case ("CANCELLED") {
+                  <span class="text-slate" style="font-size: 0.88rem">
+                    <i class="fa-solid fa-ban me-1"></i> تم إلغاء الطلب
+                  </span>
+                }
+              }
+
+              <!-- WhatsApp -->
+              <a
+                [href]="'https://wa.me/' + order.customer_phone"
+                target="_blank"
+                class="btn btn-whatsapp btn-sm ms-auto"
+              >
+                <i class="fa-brands fa-whatsapp me-1"></i> واتساب
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+}
