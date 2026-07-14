@@ -47,6 +47,13 @@ export class OrderListComponent implements OnInit {
     CANCELLED: 'badge-cancelled',
   };
 
+  isUpdating(orderId: string, status: string): boolean {
+  return this.updatingOrderId() === `${orderId}_${status}`;
+}
+
+isOrderBusy(orderId: string): boolean {
+  return this.updatingOrderId()?.startsWith(orderId) ?? false;
+}
   // ── Dummy data — replace with OrderService.orders signal later ──
   orders = this.orderService.orders;
 
@@ -127,17 +134,17 @@ export class OrderListComponent implements OnInit {
     return `منذ ${Math.floor(hours / 24)} يوم`;
   }
 
-  // ── Status update — wire to OrderService later ──
-  updateStatus(order: Order, newStatus: OrderStatus) {
-    this.updatingOrderId.set(order.id);
-    this.orderService.updateOrderStatus(order.id , newStatus).subscribe({
-      next:(updatedOrder)=>{
-        this.orderService.updateOrders(updatedOrder);
-        this.updatingOrderId.set(null);
-      },
-      error:(err)=>{
-        console.log(err);
-      }
-    })
-  }
+updateStatus(order: Order, newStatus: OrderStatus) {
+  this.updatingOrderId.set(`${order.id}_${newStatus}`); // ← غير ده
+  this.orderService.updateOrderStatus(order.id, newStatus).subscribe({
+    next: (updatedOrder) => {
+      this.orderService.updateOrders(updatedOrder);
+      this.updatingOrderId.set(null);
+    },
+    error: (err) => {
+      console.log(err);
+      this.updatingOrderId.set(null);
+    },
+  });
+}
 }

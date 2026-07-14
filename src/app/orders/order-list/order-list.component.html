@@ -163,83 +163,80 @@
                 @case ("PENDING") {
                   <button
                     class="btn btn-accent btn-sm"
-                    [disabled]="updatingOrderId() === order.id"
+                    [disabled]="isOrderBusy(order.id)"
                     (click)="updateStatus(order, 'CONFIRMED')"
                   >
-                    @if (updatingOrderId() === order.id) {
+                    @if (isUpdating(order.id, "CONFIRMED")) {
                       <span
                         class="spinner-border spinner-border-sm me-2"
                       ></span>
                       جاري التنفيذ...
                     } @else {
-                      <i class="fa-solid fa-check me-1"></i>
-                      قبول الطلب
+                      <i class="fa-solid fa-check me-1"></i> قبول الطلب
                     }
                   </button>
 
                   <button
                     class="btn btn-danger-soft btn-sm"
-                    [disabled]="updatingOrderId() === order.id"
+                    [disabled]="isOrderBusy(order.id)"
                     (click)="updateStatus(order, 'CANCELLED')"
                   >
-                    @if (updatingOrderId() === order.id) {
+                    @if (isUpdating(order.id, "CANCELLED")) {
                       <span
                         class="spinner-border spinner-border-sm me-2"
                       ></span>
                       جاري التنفيذ...
                     } @else {
-                      <i class="fa-solid fa-xmark me-1"></i>
-                      رفض الطلب
+                      <i class="fa-solid fa-xmark me-1"></i> رفض الطلب
                     }
                   </button>
                 }
+
                 @case ("CONFIRMED") {
                   <button
                     class="btn btn-ink btn-sm"
-                    [disabled]="updatingOrderId() === order.id"
+                    [disabled]="isOrderBusy(order.id)"
                     (click)="updateStatus(order, 'SHIPPED')"
                   >
-                    @if (updatingOrderId() === order.id) {
+                    @if (isUpdating(order.id, "SHIPPED")) {
                       <span
                         class="spinner-border spinner-border-sm me-2"
                       ></span>
                       جاري التنفيذ...
                     } @else {
-                      <i class="fa-solid fa-truck me-1"></i>
-                      تحديث: في الشحن
+                      <i class="fa-solid fa-truck me-1"></i> تحديث: في الشحن
                     }
                   </button>
 
                   <button
                     class="btn btn-danger-soft btn-sm"
-                    [disabled]="updatingOrderId() === order.id"
+                    [disabled]="isOrderBusy(order.id)"
                     (click)="updateStatus(order, 'CANCELLED')"
                   >
-                    @if (updatingOrderId() === order.id) {
+                    @if (isUpdating(order.id, "CANCELLED")) {
                       <span
                         class="spinner-border spinner-border-sm me-2"
                       ></span>
                       جاري التنفيذ...
                     } @else {
-                      <i class="fa-solid fa-xmark me-1"></i>
-                      إلغاء الطلب
+                      <i class="fa-solid fa-xmark me-1"></i> إلغاء الطلب
                     }
                   </button>
                 }
+
                 @case ("SHIPPED") {
                   <button
                     class="btn btn-accent btn-sm"
-                    [disabled]="updatingOrderId() === order.id"
+                    [disabled]="isOrderBusy(order.id)"
                     (click)="updateStatus(order, 'DELIVERED')"
                   >
-                    @if (updatingOrderId() === order.id) {
+                    @if (isUpdating(order.id, "DELIVERED")) {
                       <span
                         class="spinner-border spinner-border-sm me-2"
                       ></span>
                       جاري التنفيذ...
                     } @else {
-                      <i class="fa-solid fa-box-open me-1"></i>
-                      تأكيد الاستلام
+                      <i class="fa-solid fa-box-open me-1"></i> تأكيد الاستلام
                     }
                   </button>
                 }
