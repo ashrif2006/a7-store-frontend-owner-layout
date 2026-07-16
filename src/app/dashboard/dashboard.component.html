@@ -1,1 +1,285 @@
-<p>dashboard works!</p>
+<!-- ===== Page Header ===== -->
+<div class="page-header">
+  <span class="eyebrow">مرحبًا بك</span>
+  <h1 class="h3 mt-1 mb-0">لوحة التحكم</h1>
+  <p class="text-slate mb-0 mt-1">{{ todayDate }}</p>
+</div>
+
+<!-- ===== Loading Skeletons ===== -->
+@if (isLoading()) {
+  <div class="row g-3 mb-4">
+    @for (i of skeletons; track i) {
+      <div class="col-6 col-lg-3">
+        <div
+          class="skeleton"
+          style="height: 110px; border-radius: var(--r-md)"
+        ></div>
+      </div>
+    }
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div
+        class="skeleton"
+        style="height: 320px; border-radius: var(--r-md)"
+      ></div>
+    </div>
+    <div class="col-lg-5">
+      <div
+        class="skeleton"
+        style="height: 320px; border-radius: var(--r-md)"
+      ></div>
+    </div>
+  </div>
+}
+
+<!-- ===== Content ===== -->
+@else {
+  <!-- Stat Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card c-green">
+        <div class="accent-bar"></div>
+        <div class="stat-label">إجمالي المبيعات</div>
+        <div class="stat-value num mt-1">
+          {{ stats()?.totalSales | number }} ج.م
+        </div>
+        <div class="mt-1 text-slate" style="font-size: 0.82rem">
+          من الطلبات المكتملة
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-card c-orange">
+        <div class="accent-bar"></div>
+        <div class="stat-label">طلبات معلّقة</div>
+        <div class="stat-value num mt-1">{{ stats()?.pendingOrdersCount }}</div>
+        <div
+          class="mt-1"
+          style="font-size: 0.82rem"
+          [class.text-slate]="!stats()?.pendingOrdersCount"
+          [class.text-warning-custom]="stats()?.pendingOrdersCount"
+        >
+          {{
+            stats()?.pendingOrdersCount
+              ? "في انتظار ردك"
+              : "لا يوجد طلبات معلّقة"
+          }}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-card c-blue">
+        <div class="accent-bar"></div>
+        <div class="stat-label">إجمالي الطلبات</div>
+        <div class="stat-value num mt-1">{{ stats()?.totalOrders }}</div>
+        <div class="mt-1 text-slate" style="font-size: 0.82rem">كل الطلبات</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-card c-purple">
+        <div class="accent-bar"></div>
+        <div class="stat-label">المنتجات النشطة</div>
+        <div class="stat-value num mt-1">{{ stats()?.activeProducts }}</div>
+        <div class="mt-1 text-slate" style="font-size: 0.82rem">
+          من أصل {{ stats()?.totalProducts }} منتج
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom row -->
+  <div class="row g-4">
+    <!-- Recent Orders -->
+    <div class="col-lg-7">
+      <div
+        class="card border-0 shadow-sm h-100"
+        style="border-radius: var(--r-md)"
+      >
+        <div class="card-body p-0">
+          <div
+            class="d-flex align-items-center justify-content-between p-4 pb-0"
+          >
+            <h2 class="h6 mb-0">
+              <i
+                class="fa-solid fa-clock-rotate-left me-2 text-accent-dark"
+              ></i>
+              آخر الطلبات
+            </h2>
+            <a
+              routerLink="/orders"
+              class="text-accent fw-semibold"
+              style="font-size: 0.88rem"
+            >
+              عرض الكل <i class="fa-solid fa-arrow-left ms-1"></i>
+            </a>
+          </div>
+
+          @if (!stats()?.recentOrders?.length) {
+            <div class="text-center py-4 text-slate" style="font-size: 0.9rem">
+              <i
+                class="fa-solid fa-inbox fa-lg d-block mb-2"
+                style="color: var(--slate-light)"
+              ></i>
+              مفيش طلبات لسه
+            </div>
+          } @else {
+            <div class="mt-3">
+              @for (order of stats()?.recentOrders; track order.id) {
+                <div class="order-row-mini">
+                  <div class="customer-init">{{ order.customer_name[0] }}</div>
+                  <div class="order-info">
+                    <div class="cname">{{ order.customer_name }}</div>
+                    <div class="oid">
+                      #{{ order.id.slice(0, 8) }} ·
+                      {{ timeAgo(order.createdAt) }}
+                    </div>
+                  </div>
+                  <span
+                    class="badge-status"
+                    [ngClass]="statusBadge(order.status)"
+                  >
+                    {{ statusLabel(order.status) }}
+                  </span>
+                  <span
+                    class="num fw-bold"
+                    style="font-size: 0.92rem; flex-shrink: 0"
+                  >
+                    {{ order.totalPrice }} ج.م
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Right col: Quick actions + Low stock -->
+    <div class="col-lg-5 d-flex flex-column gap-4">
+      <!-- Quick actions -->
+      <div class="card border-0 shadow-sm" style="border-radius: var(--r-md)">
+        <div class="card-body p-4">
+          <h2 class="h6 mb-3">
+            <i class="fa-solid fa-bolt me-2 text-accent-dark"></i>
+            إجراءات سريعة
+          </h2>
+          <div class="d-flex flex-column gap-2">
+            <a routerLink="/products/new" class="quick-action">
+              <div
+                class="qa-icon"
+                style="
+                  background: var(--accent-soft);
+                  color: var(--accent-dark);
+                "
+              >
+                <i class="fa-solid fa-plus"></i>
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size: 0.92rem">
+                  إضافة منتج جديد
+                </div>
+                <div class="text-slate" style="font-size: 0.82rem">
+                  أضف صورة، سعر، وكمية
+                </div>
+              </div>
+            </a>
+
+            <a
+              routerLink="/orders"
+              [queryParams]="{ status: 'PENDING' }"
+              class="quick-action"
+            >
+              <div class="qa-icon" style="background: #fdf3df; color: #a3700a">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size: 0.92rem">
+                  مراجعة الطلبات المعلّقة
+                </div>
+                <div class="text-slate" style="font-size: 0.82rem">
+                  @if (stats()?.pendingOrdersCount) {
+                    {{ stats()?.pendingOrdersCount }} طلب يحتاج ردك
+                  } @else {
+                    لا يوجد طلبات معلّقة
+                  }
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low stock -->
+      <div class="card border-0 shadow-sm" style="border-radius: var(--r-md)">
+        <div class="card-body p-4">
+          <h2 class="h6 mb-3">
+            <i
+              class="fa-solid fa-triangle-exclamation me-2"
+              style="color: var(--warn)"
+            ></i>
+            تحذير: مخزون منخفض
+          </h2>
+
+          @if (!stats()?.lowStockProducts?.length) {
+            <p class="text-slate mb-2" style="font-size: 0.88rem">
+              <i
+                class="fa-solid fa-circle-check me-1"
+                style="color: var(--accent)"
+              ></i>
+              كل المنتجات بمخزون كافي
+            </p>
+          } @else {
+            <div class="d-flex flex-column gap-2">
+              @for (product of stats()?.lowStockProducts; track product.id) {
+                <div class="d-flex justify-content-between align-items-center">
+                  <span style="font-size: 0.9rem">{{ product.name }}</span>
+                  <span
+                    class="badge-status num"
+                    [class.badge-cancelled]="product.stock <= 2"
+                    [class.badge-pending]="product.stock > 2"
+                  >
+                    {{ product.stock }} قطعة
+                  </span>
+                </div>
+              }
+            </div>
+          }
+
+          <a
+            routerLink="/dashboard/products"
+            class="btn btn-ghost btn-sm w-100 mt-3"
+          >
+            <i class="fa-solid fa-boxes-stacked me-1"></i> إدارة المخزون
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ===== Error State ===== -->
+@if (errorMsg()) {
+  <div
+    class="alert mt-3"
+    style="
+      background: var(--warn-soft);
+      color: var(--warn);
+      border-radius: var(--r-sm);
+      border: none;
+    "
+  >
+    <i class="fa-solid fa-circle-exclamation me-2"></i>
+    {{ errorMsg() }}
+    <button
+      class="btn btn-sm ms-3"
+      style="color: var(--warn); border: 1px solid var(--warn)"
+      (click)="loadStats()"
+    >
+      <i class="fa-solid fa-rotate-right me-1"></i> إعادة المحاولة
+    </button>
+  </div>
+}

@@ -58,16 +58,7 @@ isOrderBusy(orderId: string): boolean {
   orders = this.orderService.orders;
 
   ngOnInit() {
-    this.isLoading.set(true);
-    this.orderService.getOrders().subscribe({
-      next: (orders) => {
-        this.orderService.setOrders(orders);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.isLoading.set(false);
-      },
-    });
+    this.orderService.loadOrders();
   }
 
   // ── Filtered orders ──
