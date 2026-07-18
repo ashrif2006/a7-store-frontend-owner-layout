@@ -2,7 +2,9 @@
 @if (isFirstSetup()) {
   <div class="d-flex align-items-center gap-2 mb-4">
     <div class="setup-step done">
-      <div class="s-num"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>
+      <div class="s-num">
+        <i class="fa-solid fa-check" style="font-size: 0.65rem"></i>
+      </div>
       إنشاء الحساب
     </div>
     <div class="step-line done"></div>
@@ -24,9 +26,16 @@
     </div>
     <div class="banner-text">
       <h5>أهلًا بيك! متجرك اتعمل ✓</h5>
-      <p>خلي دقيقة تكمّل بيانات المتجر — الشعار ورقم الواتساب بيضيفوا ثقة للعملاء بتوعك.</p>
+      <p>
+        خلي دقيقة تكمّل بيانات المتجر — الشعار ورقم الواتساب بيضيفوا ثقة للعملاء
+        بتوعك.
+      </p>
     </div>
-    <button class="btn btn-ghost btn-sm" (click)="dismissBanner()" style="color:#9aa3b2; flex-shrink:0;">
+    <button
+      class="btn btn-ghost btn-sm"
+      (click)="dismissBanner()"
+      style="color: #9aa3b2; flex-shrink: 0"
+    >
       تخطّي
     </button>
   </div>
@@ -34,11 +43,12 @@
 
 <!-- ===== Main Form ===== -->
 <form [formGroup]="settingsForm" (ngSubmit)="onSave()">
-  <fieldset [disabled]="isLoading()" class="border-0 p-0 m-0 row g-4 align-items-start">
-
+  <fieldset
+    [disabled]="isLoading()"
+    class="border-0 p-0 m-0 row g-4 align-items-start"
+  >
     <!-- ===== LEFT: form sections ===== -->
     <div class="col-lg-8">
-
       <!-- Store Identity -->
       <div class="form-section">
         <div class="form-section-title">
@@ -50,12 +60,15 @@
         <div class="mb-4">
           <label class="form-label">شعار المتجر</label>
           <div class="logo-upload-wrap">
-
             <div class="logo-preview" (click)="logoInput.click()">
               @if (logoPreviewUrl()) {
-                <img [src]="logoPreviewUrl()" alt="logo">
-                <button type="button" class="logo-remove" (click)="removeLogo($event)">
-                  <i class="fa-solid fa-xmark" style="font-size:0.65rem;"></i>
+                <img [src]="logoPreviewUrl()" alt="logo" />
+                <button
+                  type="button"
+                  class="logo-remove"
+                  (click)="removeLogo($event)"
+                >
+                  <i class="fa-solid fa-xmark" style="font-size: 0.65rem"></i>
                 </button>
               } @else {
                 <div class="logo-placeholder">
@@ -66,31 +79,47 @@
             </div>
 
             <div>
-              <button type="button" class="btn btn-ghost btn-sm" (click)="logoInput.click()">
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm"
+                (click)="logoInput.click()"
+              >
                 <i class="fa-solid fa-upload me-1"></i> اختار صورة
               </button>
-              <input #logoInput type="file" accept="image/*" class="d-none" (change)="onLogoSelected($event)">
-              <p class="text-slate mt-2 mb-0" style="font-size:0.8rem;">PNG أو JPG — مربعة أحسن، حتى 2MB</p>
+              <input
+                #logoInput
+                type="file"
+                accept="image/*"
+                class="d-none"
+                (change)="onLogoSelected($event)"
+              />
+              <p class="text-slate mt-2 mb-0" style="font-size: 0.8rem">
+                PNG أو JPG — مربعة أحسن، حتى 2MB
+              </p>
             </div>
-
           </div>
         </div>
 
         <!-- Store name -->
         <div class="mb-3">
-          <label class="form-label">اسم المتجر <span class="text-danger">*</span></label>
+          <label class="form-label"
+            >اسم المتجر <span class="text-danger">*</span></label
+          >
           <input
             type="text"
             class="form-control"
             formControlName="name"
             placeholder="اسم متجرك"
-            [class.is-invalid]="isInvalid('name')">
+            [class.is-invalid]="isInvalid('name')"
+          />
           <div class="invalid-feedback">من فضلك أدخل اسم المتجر.</div>
         </div>
 
         <!-- Slug -->
         <div class="mb-0">
-          <label class="form-label">رابط المتجر <span class="text-danger">*</span></label>
+          <label class="form-label"
+            >رابط المتجر <span class="text-danger">*</span></label
+          >
           <div class="input-group" [class.is-invalid]="isInvalid('slug')">
             <span class="input-group-text">/a7-coustomer.vercel.app</span>
             <input
@@ -98,17 +127,23 @@
               class="form-control"
               formControlName="slug"
               placeholder="your-store"
-              [class.is-invalid]="isInvalid('slug')">
+              [class.is-invalid]="isInvalid('slug')"
+            />
           </div>
           <div class="invalid-feedback d-block" *ngIf="isInvalid('slug')">
             الرابط لازم يكون حروف إنجليزية صغيرة وأرقام وـ(-) بس.
           </div>
           <div class="slug-live mt-2">
             رابط متجرك:
-            <span class="slug-val" style="color: #2e7d32;">a7-coustomer.vercel.app/?store={{ settingsForm.get('slug')?.value || 'your-store' }}</span>
+            <span class="slug-val" style="color: #2e7d32"
+              >a7-coustomer.vercel.app/?store={{
+                settingsForm.get("slug")?.value || "your-store"
+              }}</span
+            >
           </div>
-          <p class="text-slate mt-1 mb-0" style="font-size:0.8rem;">
-            حروف إنجليزية صغيرة وأرقام و(-) بس – تغيير الرابط ممكن يؤثر على لينكات قديمة.
+          <p class="text-slate mt-1 mb-0" style="font-size: 0.8rem">
+            حروف إنجليزية صغيرة وأرقام و(-) بس – تغيير الرابط ممكن يؤثر على
+            لينكات قديمة.
           </p>
         </div>
       </div>
@@ -125,19 +160,24 @@
           <label class="form-label">رقم واتساب المتجر</label>
           <div class="input-group">
             <span class="wa-prefix input-group-text">
-              <i class="fa-brands fa-whatsapp me-1" style="color:#25d366;"></i> +20
+              <i class="fa-brands fa-whatsapp me-1" style="color: #25d366"></i>
+              +20
             </span>
             <input
               type="tel"
               class="form-control"
               formControlName="whatsapp_number"
               placeholder="01012345678"
-              [class.is-invalid]="isInvalid('whatsapp_number')">
+              [class.is-invalid]="isInvalid('whatsapp_number')"
+            />
           </div>
-          <div class="invalid-feedback d-block" *ngIf="isInvalid('whatsapp_number')">
+          <div
+            class="invalid-feedback d-block"
+            *ngIf="isInvalid('whatsapp_number')"
+          >
             رقم الواتساب لازم يكون أرقام بس (10-11 رقم).
           </div>
-          <p class="text-slate mt-1 mb-0" style="font-size:0.8rem;">
+          <p class="text-slate mt-1 mb-0" style="font-size: 0.8rem">
             الطلبات الجديدة هتوصلك على الرقم ده عبر واتساب.
           </p>
         </div>
@@ -149,105 +189,266 @@
             type="email"
             class="form-control"
             formControlName="email"
-            style="background:var(--paper-dim); color:var(--slate);">
-          <p class="text-slate mt-1 mb-0" style="font-size:0.8rem;">
+            style="background: var(--paper-dim); color: var(--slate)"
+          />
+          <p class="text-slate mt-1 mb-0" style="font-size: 0.8rem">
             البريد ده مش ممكن يتغير من هنا — تواصل مع الدعم لو محتاج.
           </p>
         </div>
       </div>
+      <!-- Telegram Notifications -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-brands fa-telegram text-accent-dark"></i>
+          إشعارات الطلبات
+        </div>
+
+        @if (isTelegramConnected()) {
+          <!-- Connected state -->
+          <div class="telegram-status connected">
+            <div class="d-flex align-items-center gap-3">
+              <div class="tg-icon connected">
+                <i class="fa-brands fa-telegram fa-lg"></i>
+              </div>
+              <div>
+                <div class="fw-bold" style="font-size: 0.92rem">
+                  <i
+                    class="fa-solid fa-circle-check me-1"
+                    style="color: var(--accent)"
+                  ></i>
+                  الإشعارات مفعّلة على تيليجرام
+                </div>
+                <p class="text-slate mb-0 mt-1" style="font-size: 0.82rem">
+                  هتوصلك رسالة فورية على تيليجرام مع كل طلب جديد.
+                </p>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <!-- Not connected state -->
+          <p class="text-slate mb-3" style="font-size: 0.9rem">
+            فعّل الإشعارات عشان توصلك رسالة على تيليجرام فور ما أي زبون يعمل طلب
+            جديد.
+          </p>
+
+          <!-- Steps -->
+          <div class="tg-steps mb-4">
+            <div class="tg-step">
+              <div class="tg-step-num">0</div>
+              <div>
+                <strong>افتح من الموقع على الموبايل</strong>
+                <p class="text-slate mb-0" style="font-size: 0.82rem">
+                  يجب ان يكون لديك التطبيق على الموبيال
+                </p>
+              </div>
+            </div>
+            <div class="tg-step">
+              <div class="tg-step-num">1</div>
+              <div>
+                <strong>افتح البوت</strong>
+                <p class="text-slate mb-0" style="font-size: 0.82rem">
+                  اضغط الزرار بالأسفل عشان تفتح محادثة مع البوت على تيليجرام.
+                </p>
+              </div>
+            </div>
+            <div class="tg-step">
+              <div class="tg-step-num">2</div>
+              <div>
+                <strong>ابعت /start</strong>
+                <p class="text-slate mb-0" style="font-size: 0.82rem">
+                  في المحادثة ابعت الأمر <code>/start</code> وشارك رقم تليفونك.
+                </p>
+              </div>
+            </div>
+            <div class="tg-step">
+              <div class="tg-step-num">3</div>
+              <div>
+                <strong>استنى التأكيد</strong>
+                <p class="text-slate mb-0" style="font-size: 0.82rem">
+                  البوت هيتحقق من رقمك ويبعتلك تأكيد تفعيل الإشعارات.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Warning -->
+          <div
+            class="alert py-2 mb-4"
+            style="
+              background: #fdf3df;
+              border: none;
+              border-radius: var(--r-sm);
+              font-size: 0.82rem;
+            "
+          >
+            <i
+              class="fa-solid fa-triangle-exclamation me-1"
+              style="color: #a3700a"
+            ></i>
+            <span style="color: #a3700a">
+              لازم رقم تيليجرام بتاعك يكون نفس رقم الواتساب المسجل في متجرك
+              @if (settingsForm.get("whatsapp_number")?.value) {
+                <strong
+                  >(+20{{ settingsForm.get("whatsapp_number")?.value }})</strong
+                >
+              }
+            </span>
+          </div>
+
+          <!-- CTA Button -->
+          <a
+            [href]="telegramBotLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-telegram"
+          >
+            <i class="fa-brands fa-telegram me-2"></i>
+            فعّل الإشعارات عبر تيليجرام
+          </a>
+        }
+      </div>
 
       <!-- Danger Zone -->
       <div class="danger-zone mb-4">
-        <h5><i class="fa-solid fa-triangle-exclamation me-2"></i>منطقة الخطر</h5>
-        <p class="text-slate mb-3" style="font-size:0.88rem;">
-          حذف المتجر هيشيل كل المنتجات والطلبات والبيانات نهائيًا ومش ممكن ترجع منه.
+        <h5>
+          <i class="fa-solid fa-triangle-exclamation me-2"></i>منطقة الخطر
+        </h5>
+        <p class="text-slate mb-3" style="font-size: 0.88rem">
+          حذف المتجر هيشيل كل المنتجات والطلبات والبيانات نهائيًا ومش ممكن ترجع
+          منه.
         </p>
         <button
           type="button"
           class="btn btn-danger-soft btn-sm"
           data-bs-toggle="modal"
-          data-bs-target="#deleteStoreModal">
+          data-bs-target="#deleteStoreModal"
+        >
           <i class="fa-solid fa-trash-can me-1"></i> حذف المتجر نهائيًا
         </button>
       </div>
-
     </div>
 
     <!-- ===== RIGHT: live preview ===== -->
     <div class="col-lg-4">
-      <div class="form-section" style="position:sticky; top:80px;">
+      <div class="form-section" style="position: sticky; top: 80px">
         <div class="form-section-title">
           <i class="fa-solid fa-eye text-accent-dark"></i>
           معاينة المتجر
         </div>
 
-        <div class="border rounded overflow-hidden" style="border-color:var(--line) !important;">
-
+        <div
+          class="border rounded overflow-hidden"
+          style="border-color: var(--line) !important"
+        >
           <!-- Mock store header -->
-          <div class="d-flex align-items-center gap-2 p-3" style="background:var(--ink);">
+          <div
+            class="d-flex align-items-center gap-2 p-3"
+            style="background: var(--ink)"
+          >
             <div
               class="d-flex align-items-center justify-content-center rounded fw-bold text-white overflow-hidden flex-shrink-0"
-              style="width:42px; height:42px; background:var(--accent); font-family:var(--font-display);">
+              style="
+                width: 42px;
+                height: 42px;
+                background: var(--accent);
+                font-family: var(--font-display);
+              "
+            >
               @if (logoPreviewUrl()) {
-                <img [src]="logoPreviewUrl()" alt="logo" style="width:100%; height:100%; object-fit:cover;">
+                <img
+                  [src]="logoPreviewUrl()"
+                  alt="logo"
+                  style="width: 100%; height: 100%; object-fit: cover"
+                />
               } @else {
                 {{ nameInitial() }}
               }
             </div>
             <div>
-              <div class="fw-bold text-white" style="font-size:0.92rem;">
-                {{ settingsForm.get('name')?.value || 'اسم المتجر' }}
+              <div class="fw-bold text-white" style="font-size: 0.92rem">
+                {{ settingsForm.get("name")?.value || "اسم المتجر" }}
               </div>
-              <div class="num" style="color:#9aa3b2; font-size:0.72rem;">
-                a7-coustomer.vercel.app/?store={{ settingsForm.get('slug')?.value || 'your-store' }}
+              <div class="num" style="color: #9aa3b2; font-size: 0.72rem">
+                <a
+                  [href]="
+                    'https://a7-coustomer.vercel.app/?store=' +
+                    (settingsForm.get('slug')?.value || 'your-store')
+                  "
+                  target="_blank"
+                >
+                  https://a7-coustomer.vercel.app/?store={{
+                    settingsForm.get("slug")?.value || "your-store"
+                  }}
+                </a>
               </div>
             </div>
           </div>
 
           <!-- Products placeholder -->
-          <div class="p-3" style="background:#fff;">
-            <div class="d-flex align-items-center justify-content-center rounded"
-              style="height:56px; background:var(--paper-dim); color:var(--slate-light); font-size:0.82rem;">
+          <div class="p-3" style="background: #fff">
+            <div
+              class="d-flex align-items-center justify-content-center rounded"
+              style="
+                height: 56px;
+                background: var(--paper-dim);
+                color: var(--slate-light);
+                font-size: 0.82rem;
+              "
+            >
               المنتجات ستظهر هنا
             </div>
           </div>
 
           <!-- WhatsApp row -->
-          <div class="d-flex align-items-center gap-2 px-3 py-2 border-top" style="border-color:var(--line) !important;">
-            <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i>
-            <span class="num" style="font-size:0.82rem; color:var(--slate);">
-              @if (settingsForm.get('whatsapp_number')?.value) {
-                +20{{ settingsForm.get('whatsapp_number')?.value }}
+          <div
+            class="d-flex align-items-center gap-2 px-3 py-2 border-top"
+            style="border-color: var(--line) !important"
+          >
+            <i class="fa-brands fa-whatsapp" style="color: #25d366"></i>
+            <span class="num" style="font-size: 0.82rem; color: var(--slate)">
+              @if (settingsForm.get("whatsapp_number")?.value) {
+                +20{{ settingsForm.get("whatsapp_number")?.value }}
               } @else {
                 لم يضف رقم واتساب بعد
               }
             </span>
           </div>
-
         </div>
 
         <!-- Tip -->
-        <div class="mt-3 p-3 rounded" style="background:var(--accent-soft);">
-          <p class="mb-0" style="font-size:0.82rem; color:var(--accent-dark);">
+        <div class="mt-3 p-3 rounded" style="background: var(--accent-soft)">
+          <p class="mb-0" style="font-size: 0.82rem; color: var(--accent-dark)">
             <i class="fa-solid fa-lightbulb me-1"></i>
-            <strong>نصيحة:</strong> المتاجر اللي عندها شعار ورقم واتساب بتحصل على ثقة أكتر من العملاء.
+            <strong>نصيحة:</strong> المتاجر اللي عندها شعار ورقم واتساب بتحصل
+            على ثقة أكتر من العملاء.
           </p>
         </div>
       </div>
     </div>
-
   </fieldset>
 </form>
 
 <!-- ===== Sticky Save Bar ===== -->
 <div class="actions-bar">
   @if (errorMsg()) {
-    <span class="text-danger me-auto" style="font-size:0.85rem;">
+    <span class="text-danger me-auto" style="font-size: 0.85rem">
       <i class="fa-solid fa-circle-exclamation me-1"></i>{{ errorMsg() }}
     </span>
   }
-  <button type="button" class="btn btn-ghost" [disabled]="isLoading() || isSaving()" routerLink="/dashboard/products">إلغاء</button>
-  <button type="button" class="btn btn-accent" [disabled]="isLoading() || isSaving()" (click)="onSave()">
+  <button
+    type="button"
+    class="btn btn-ghost"
+    [disabled]="isLoading() || isSaving()"
+    routerLink="/dashboard/products"
+  >
+    إلغاء
+  </button>
+  <button
+    type="button"
+    class="btn btn-accent"
+    [disabled]="isLoading() || isSaving()"
+    (click)="onSave()"
+  >
     @if (isSaving()) {
       <span class="spinner-border spinner-border-sm me-2"></span>
     } @else {
@@ -260,27 +461,40 @@
 <!-- ===== Delete Modal ===== -->
 <div class="modal fade" id="deleteStoreModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0" style="border-radius:var(--r-md);">
+    <div class="modal-content border-0" style="border-radius: var(--r-md)">
       <div class="modal-body p-4 text-center">
-
-        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
-          style="width:60px; height:60px; background:var(--warn-soft); color:var(--warn);">
+        <div
+          class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
+          style="
+            width: 60px;
+            height: 60px;
+            background: var(--warn-soft);
+            color: var(--warn);
+          "
+        >
           <i class="fa-solid fa-trash-can fa-lg"></i>
         </div>
 
         <h5 class="mb-2">حذف المتجر نهائيًا؟</h5>
-        <p class="text-slate mb-3">هتتمسح كل المنتجات والطلبات والبيانات. مش ممكن ترجعها تاني.</p>
+        <p class="text-slate mb-3">
+          هتتمسح كل المنتجات والطلبات والبيانات. مش ممكن ترجعها تاني.
+        </p>
 
         <div class="mb-4 text-start">
-          <label class="form-label" style="font-size:0.88rem;">
-            اكتب <strong>{{ settingsForm.get('slug')?.value || 'your-store' }}</strong> للتأكيد
+          <label class="form-label" style="font-size: 0.88rem">
+            اكتب
+            <strong>{{
+              settingsForm.get("slug")?.value || "your-store"
+            }}</strong>
+            للتأكيد
           </label>
           <input
             type="text"
             class="form-control"
             [(ngModel)]="deleteConfirmText"
-            [ngModelOptions]="{standalone: true}"
-            [placeholder]="settingsForm.get('slug')?.value || 'your-store'">
+            [ngModelOptions]="{ standalone: true }"
+            [placeholder]="settingsForm.get('slug')?.value || 'your-store'"
+          />
         </div>
 
         <div class="d-flex gap-2 justify-content-center">
@@ -288,39 +502,58 @@
           <button
             class="btn btn-danger-soft"
             [disabled]="deleteConfirmText !== settingsForm.get('slug')?.value"
-            (click)="onDeleteStore()">
+            (click)="onDeleteStore()"
+          >
             <i class="fa-solid fa-trash-can me-1"></i> حذف المتجر
           </button>
         </div>
-
       </div>
     </div>
   </div>
 </div>
 
 <!-- ===== Success Toast ===== -->
-<div class="toast-container position-fixed bottom-0 start-50 translate-middle-x mb-4" style="z-index:9999;">
+<div
+  class="toast-container position-fixed bottom-0 start-50 translate-middle-x mb-4"
+  style="z-index: 9999"
+>
   <div
     #saveToast
     class="toast align-items-center border-0"
-    style="background:var(--ink); color:#fff; border-radius:var(--r-sm);">
+    style="background: var(--ink); color: #fff; border-radius: var(--r-sm)"
+  >
     <div class="d-flex">
       <div class="toast-body d-flex align-items-center gap-2">
-        <i class="fa-solid fa-check" style="color:var(--accent);"></i>
+        <i class="fa-solid fa-check" style="color: var(--accent)"></i>
         تم التعديل بنجاح
       </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        data-bs-dismiss="toast"
+      ></button>
     </div>
   </div>
 </div>
 
 <!-- ===== Loading Toast ===== -->
 @if (isLoading()) {
-  <div class="toast-container position-fixed top-0 start-50 translate-middle-x mt-4" style="z-index:9999;">
-    <div class="toast show align-items-center border-0" style="background:var(--ink); color:#fff; border-radius:var(--r-sm);">
+  <div
+    class="toast-container position-fixed top-0 start-50 translate-middle-x mt-4"
+    style="z-index: 9999"
+  >
+    <div
+      class="toast show align-items-center border-0"
+      style="background: var(--ink); color: #fff; border-radius: var(--r-sm)"
+    >
       <div class="d-flex">
         <div class="toast-body d-flex align-items-center gap-2">
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="color:var(--accent);"></span>
+          <span
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+            style="color: var(--accent)"
+          ></span>
           <span>جاري تحميل إعدادات المتجر...</span>
         </div>
       </div>

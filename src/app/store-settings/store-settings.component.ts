@@ -1,27 +1,50 @@
-import { Component, signal, computed, ViewChild, ElementRef, inject, OnInit, effect } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  ViewChild,
+  ElementRef,
+  inject,
+  OnInit,
+  effect,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+  FormsModule,
+} from '@angular/forms';
 import { NgIf } from '@angular/common';
 import { StoreService } from '../services/store.service';
-import { UpdateStoreRequest, updateStoreResponse } from '../models/store.interface';
+import {
+  UpdateStoreRequest,
+  updateStoreResponse,
+} from '../models/store.interface';
 import { SpinnerComponent } from '../shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-store-settings',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, FormsModule, NgIf, SpinnerComponent],
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    FormsModule,
+    NgIf,
+    SpinnerComponent,
+  ],
   templateUrl: './store-settings.component.html',
   styleUrl: './store-settings.component.css',
 })
 export class StoreSettingsComponent implements OnInit {
-
   @ViewChild('saveToast') saveToastEl!: ElementRef;
 
   // ── UI state — wire to StoreService later ──
   isLoading = signal(true);
   isSaving = signal(false);
   errorMsg = signal('');
-  isFirstSetup = signal(true);       // set false after first save
+  isFirstSetup = signal(true); // set false after first save
   logoPreviewUrl = signal<string | null>(null);
   selectedLogoFile: File | null = null;
   logoRemoved = false;
@@ -30,6 +53,11 @@ export class StoreSettingsComponent implements OnInit {
   settingsForm: FormGroup;
   storeService = inject(StoreService);
   private fb = inject(FormBuilder);
+
+  readonly telegramBotLink = 'https://t.me/A7_store_bot';
+  isTelegramConnected = computed(() => {
+    return !!this.storeService.store()?.telegram_chat_id;
+  });
 
   ngOnInit() {
     if (this.storeService.store()) {
@@ -44,7 +72,7 @@ export class StoreSettingsComponent implements OnInit {
         error: (err) => {
           console.log(err);
           this.isLoading.set(false);
-        }
+        },
       });
     }
   }
@@ -63,21 +91,25 @@ export class StoreSettingsComponent implements OnInit {
       email: [{ value: '', disabled: true }],
     });
 
-    effect(() => {
-      const currentStore = this.storeService.store();
-      if (currentStore) {
-        this.settingsForm.patchValue({
-          name: currentStore.name,
-          slug: currentStore.slug,
-          whatsapp_number: currentStore.whatsapp_number
-        });
-        this.logoPreviewUrl.set(currentStore.logo_url)
-      }
-    },
-      { allowSignalWrites: true }
-    )
+    effect(
+      () => {
+        const currentStore = this.storeService.store();
+        if (currentStore) {
+          this.settingsForm.patchValue({
+            name: currentStore.name,
+            slug: currentStore.slug,
+            whatsapp_number: currentStore.whatsapp_number,
+          });
+          this.logoPreviewUrl.set(currentStore.logo_url);
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 
+  connectTelegram() {
+    window.open(this.telegramBotLink, '_blank');
+  }
   isInvalid(field: string): boolean {
     const ctrl = this.settingsForm.get(field);
     return !!(ctrl && ctrl.invalid && ctrl.touched);
@@ -119,13 +151,17 @@ export class StoreSettingsComponent implements OnInit {
     });
   }
 
-  dismissBanner() { this.isFirstSetup.set(false); }
+  dismissBanner() {
+    this.isFirstSetup.set(false);
+  }
 
   private showSuccessToast() {
     if (this.saveToastEl && this.saveToastEl.nativeElement) {
       const bootstrap = (window as any).bootstrap;
       if (bootstrap) {
-        const toast = bootstrap.Toast.getOrCreateInstance(this.saveToastEl.nativeElement);
+        const toast = bootstrap.Toast.getOrCreateInstance(
+          this.saveToastEl.nativeElement,
+        );
         toast.show();
       }
     }
@@ -143,12 +179,12 @@ export class StoreSettingsComponent implements OnInit {
       name: this.settingsForm.value.name!,
       slug: this.settingsForm.value.slug!,
       whatsapp_number: this.settingsForm.value.whatsapp_number!,
-      telegram_chat_id: null
+      telegram_chat_id: null,
     };
 
     this.storeService.updateStore(data).subscribe({
       next: (res) => {
-        console.log(res)
+        console.log(res);
         this.storeService.setStore(res.store);
         if (this.selectedLogoFile) {
           this.uploadLogo();
@@ -162,9 +198,8 @@ export class StoreSettingsComponent implements OnInit {
         console.log(err);
         this.isSaving.set(false);
         this.errorMsg.set('حدث خطأ أثناء حفظ التغييرات');
-      }
-    })
-
+      },
+    });
   }
 
   // ── Delete — wire to StoreService later ──
