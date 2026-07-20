@@ -1,7 +1,8 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
 import { StoreService } from '../../../services/store.service';
+import { TokenService } from '../../../services/token.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,6 +13,8 @@ import { StoreService } from '../../../services/store.service';
 export class SidebarComponent {
 
   storeService = inject(StoreService); 
+  private router = inject(Router);
+  private tokenService = inject(TokenService);
   constructor(){
     effect(()=>{
       const currentStore = this.storeService.store();
@@ -29,5 +32,11 @@ export class SidebarComponent {
 
   getFirstChar(word:string){
     return word.slice(0,1)
+  }
+
+  logout(){
+    this.tokenService.remove();
+    this.router.navigate(["/login"]);
+    localStorage.clear()
   }
 }
