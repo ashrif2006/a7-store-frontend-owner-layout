@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { TokenService } from '../../services/token.service';
@@ -12,7 +12,13 @@ import { StoreService } from '../../services/store.service';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule , SpinnerComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    ReactiveFormsModule,
+    SpinnerComponent,
+  ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
@@ -35,13 +41,20 @@ export class RegisterComponent {
     phone: [''],
     password: [''],
     confirmPassword: [''],
-    agreeTerms: [false]
+    agreeTerms: [false],
   });
   showPassword = false;
   loading = false;
+  errMessage = '';
+  slugTakenError = false;
   showConfirmPassword = false;
   currentStep = 1;
 
+  ngOnInit() {
+  this.registerForm.get('storeName')?.valueChanges.subscribe(() => {
+    this.slugTakenError = false;
+  });
+}
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
@@ -51,7 +64,10 @@ export class RegisterComponent {
   }
 
   get passwordsMatch(): boolean {
-    return this.registerForm.get('password')?.value === this.registerForm.get('confirmPassword')?.value;
+    return (
+      this.registerForm.get('password')?.value ===
+      this.registerForm.get('confirmPassword')?.value
+    );
   }
 
   nextStep() {
@@ -64,35 +80,50 @@ export class RegisterComponent {
 
   onRegister() {
     // Logic will be handled separately
-    const dataRequest:registerRequest ={
-      name:this.registerForm.value.ownerName!,
-      email:this.registerForm.value.email!,
-      password:this.registerForm.value.password!,
-      slug:this.registerForm.value.storeName!,
-
-    } 
+    const dataRequest: registerRequest = {
+      name: this.registerForm.value.ownerName!,
+      email: this.registerForm.value.email!,
+      password: this.registerForm.value.password!,
+      slug: this.registerForm.value.storeName!,
+    };
 
     const storeInformation = {
       name: this.registerForm.value.ownerName!,
       slug: this.registerForm.value.storeName!,
       whatsapp_number: this.registerForm.value.phone!,
-    }
-    this.loading = true
+    };
+    this.loading = true;
+    this.errMessage = '';
     this.authService.register(dataRequest).subscribe({
-      
-      next:(res)=>{
+      next: (res) => {
         console.log(res);
         this.tokenService.save(res.token);
-        console.log('store' , res.store);
+        console.log('store', res.store);
         // this.StoreService.setStore(res.store);
         this.router.navigate(['/store-settings']);
-        this.loading = false
+        this.loading = false;
       },
-      error:(err)=>{
-        this.loading=false;
-        console.log(err);
-      }
-    })
-    console.log(this.registerForm.value)
+      error: (err) => {
+        this.loading = false;
+        console.log(err) 
+        if (err.error?.message === 'Slug is already taken') {
+          this.slugTakenError = true;
+           this.registerForm.get('storeName')?.setErrors({
+            taken: true,
+          });
+          this.prevStep();
+
+          this.registerForm.get('storeName')?.markAsTouched();
+          this.registerForm.get('storeName')?.markAsDirty();
+          console.log(this.registerForm.get('storeName')?.errors)
+          console.log(this.registerForm.get('storeName')?.hasError('taken'))
+
+          return;
+        }
+
+        this.errMessage = err.error?.message || 'حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى.';
+      },
+    });
+    console.log(this.registerForm.value);
   }
 }
