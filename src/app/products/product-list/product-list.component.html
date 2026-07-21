@@ -73,7 +73,7 @@
       {{ products().length === 0 ? 'ابدأ بإضافة أول منتج في متجرك.' : 'جرب كلمة بحث أو فلتر مختلف.' }}
     </p>
     @if (products().length === 0) {
-      <a routerLink="/dashboard/products/new" class="btn btn-accent">
+      <a routerLink="/products/new" class="btn btn-accent">
         <i class="fa-solid fa-plus me-1"></i> إضافة منتج جديد
       </a>
     }
