@@ -11,8 +11,7 @@ import { StoreService } from './services/store.service';
 })
 export class AppComponent {
   title = 'a7-front-ng';
-  private storeService = inject(StoreService);
+  
   ngOnInit(){
-    this.storeService.loadStore();
   }
 }
