@@ -3,6 +3,8 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
 import { StoreService } from '../../../services/store.service';
 import { TokenService } from '../../../services/token.service';
+import { ProductService } from '../../../services/product.service';
+import { OrderService } from '../../../services/order.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,6 +15,8 @@ import { TokenService } from '../../../services/token.service';
 export class SidebarComponent {
 
   storeService = inject(StoreService); 
+  productService = inject(ProductService)
+  orderService = inject(OrderService)
   private router = inject(Router);
   private tokenService = inject(TokenService);
   constructor(){
@@ -36,6 +40,9 @@ export class SidebarComponent {
 
   logout(){
     this.tokenService.remove();
+    this.orderService.clearOrders()
+    this.productService.clearProducts();
+    this.storeService.clearStore();
     this.router.navigate(["/login"]);
     localStorage.clear()
   }
