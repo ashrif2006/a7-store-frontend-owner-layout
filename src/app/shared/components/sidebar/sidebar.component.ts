@@ -1,10 +1,11 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
 import { StoreService } from '../../../services/store.service';
 import { TokenService } from '../../../services/token.service';
 import { ProductService } from '../../../services/product.service';
 import { OrderService } from '../../../services/order.service';
+import { DashBoardService } from '../../../services/dashboard.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,26 +18,23 @@ export class SidebarComponent {
   storeService = inject(StoreService); 
   productService = inject(ProductService)
   orderService = inject(OrderService)
+  dashboardService = inject(DashBoardService);
   private router = inject(Router);
   private tokenService = inject(TokenService);
-  constructor(){
-    effect(()=>{
-      const currentStore = this.storeService.store();
-      if(currentStore){
-        this.storeName.set(currentStore.name);
-        this.storeSlug.set(currentStore.slug);
-        this.storeInitial.set(this.getFirstChar(currentStore.slug));
-      }
-    },{allowSignalWrites:true})
-  }
-  storeName    = signal('متجر سارة');
-  storeSlug    = signal('sara-store');
-  storeInitial = signal('س');
-  pendingCount = signal(3); // wire to OrderService later
 
-  getFirstChar(word:string){
-    return word.slice(0,1)
-  }
+  store = this.storeService.store;
+  storeName = computed(()=> this.store()?.name ?? 'متجر');
+  storeSlug = computed(()=> this.store()?.slug??'');
+  storeInitial = computed(()=>{
+    const slug = this.store()?.slug;
+    return slug?slug.charAt(0):'a7'
+  })
+
+  report = this.dashboardService.reports;
+
+  pendingCount = computed(()=> this.report()?.pendingOrdersCount ?? 0 )
+
+ 
 
   logout(){
     this.tokenService.remove();
