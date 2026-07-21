@@ -7,6 +7,7 @@ export interface registerRequest {
     email:string;
     password:string;
     slug:string;
+    whatsapp_number:string;
 }
 
 export interface registerResponse {

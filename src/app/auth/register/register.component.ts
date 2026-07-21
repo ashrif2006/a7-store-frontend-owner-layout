@@ -84,6 +84,7 @@ export class RegisterComponent {
       name: this.registerForm.value.ownerName!,
       email: this.registerForm.value.email!,
       password: this.registerForm.value.password!,
+      whatsapp_number: this.registerForm.value.phone!,
       slug: this.registerForm.value.storeName!,
     };
 

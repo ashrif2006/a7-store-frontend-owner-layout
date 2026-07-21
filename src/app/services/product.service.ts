@@ -27,7 +27,7 @@ export class ProductService {
     localStorage.setItem('products' , JSON.stringify(products));
   }
   addProduct(product:Product){
-    this.products.update(products=> [...products,product])
+    this.products.update(products=> [product,...products])
   }
   updateProductInSignal(product:Product){
     this.products.update(products => 
