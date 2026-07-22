@@ -57,6 +57,14 @@ a { text-decoration: none; }
 /* ==========================================================================
    SIGNATURE: BRAND MARK
    ========================================================================== */
+   .logo{
+    height: 40px;          /* الارتفاع المناسب للهيدر */
+  width: auto;           /* يضبط العرض تلقائيًا حسب الارتفاع لمنع التمدد */
+  max-width: 150px;      /* أقصى عرض مسموح به */
+  object-fit: contain;   /* يحافظ على أبعاد الصورة جودة وبدون قص */
+  display: inline-block;
+  vertical-align: middle;
+   }
 .navbar-brand-mark {
   font-family: var(--font-display);
   font-weight: 700;
